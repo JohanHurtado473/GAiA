@@ -64,6 +64,7 @@
         if (
           $_GET["ruta"] == "inicio" ||
           $_GET["ruta"] == "apoyos" ||
+          $_GET["ruta"] == "sedes" ||
           $_GET["ruta"] == "identificacion"|| 
           $_GET["ruta"] == "financiera"
         ) {
