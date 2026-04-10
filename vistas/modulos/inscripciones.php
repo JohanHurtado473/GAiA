@@ -102,25 +102,35 @@
           <!-- VISTA ADMINISTRADOR -->
           <div id="vistaAdmin" style="display: none;">
             <div class="row align-items-center mb-4">
-              <div class="col-md-8 d-flex flex-wrap" style="gap: 10px;">
-                <button class="btn d-flex align-items-center" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px;">
-                  <i class="fas fa-wallet fa-lg mr-2"></i>
-                  <div class="text-left text-sm" style="line-height: 1.1;">Apoyo de<br>sostenimiento</div>
-                </button>
-                <button class="btn d-flex align-items-center" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px;">
-                  <i class="fas fa-phone-alt fa-lg mr-2"></i>
-                  <div class="text-left text-sm" style="line-height: 1.1;">apoyo<br>de datos</div>
-                </button>
-                <button class="btn d-flex align-items-center" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px;">
-                  <i class="fas fa-utensils fa-lg mr-2"></i>
-                  <div class="text-left text-sm" style="line-height: 1.1;">apoyo de<br>alimentación</div>
-                </button>
-                <button class="btn d-flex align-items-center" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px;">
-                  <i class="fas fa-car fa-lg mr-2"></i>
-                  <div class="text-left text-sm" style="line-height: 1.1;">apoyo de<br>transporte</div>
-                </button>
+              <div class="col-md-8">
+                <ul class="nav nav-pills d-flex flex-wrap" id="adminTabs" role="tablist" style="gap: 10px;">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active d-flex align-items-center" id="tab-sost-btn" data-toggle="pill" data-target="#tab-sost" type="button" role="tab" aria-selected="true" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px; border: none; opacity: 1;">
+                      <i class="fas fa-wallet fa-lg mr-2"></i>
+                      <div class="text-left text-sm" style="line-height: 1.1;">Apoyo de<br>sostenimiento</div>
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link d-flex align-items-center" id="tab-datos-btn" data-toggle="pill" data-target="#tab-datos" type="button" role="tab" aria-selected="false" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px; border: none; opacity: 0.6;">
+                      <i class="fas fa-phone-alt fa-lg mr-2"></i>
+                      <div class="text-left text-sm" style="line-height: 1.1;">apoyo<br>de datos</div>
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link d-flex align-items-center" id="tab-alim-btn" data-toggle="pill" data-target="#tab-alim" type="button" role="tab" aria-selected="false" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px; border: none; opacity: 0.6;">
+                      <i class="fas fa-utensils fa-lg mr-2"></i>
+                      <div class="text-left text-sm" style="line-height: 1.1;">apoyo de<br>alimentación</div>
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link d-flex align-items-center" id="tab-trans-btn" data-toggle="pill" data-target="#tab-trans" type="button" role="tab" aria-selected="false" style="background-color: #0b8043; color: white; border-radius: 8px; padding: 8px 15px; border: none; opacity: 0.6;">
+                      <i class="fas fa-car fa-lg mr-2"></i>
+                      <div class="text-left text-sm" style="line-height: 1.1;">apoyo de<br>transporte</div>
+                    </button>
+                  </li>
+                </ul>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4 mt-3 mt-md-0">
                 <div class="input-group">
                   <div class="input-group-prepend">
                     <span class="input-group-text" style="border: 1px solid #28a745; border-right: none; border-radius: 8px 0 0 8px; background-color: transparent;"><i class="far fa-user"></i></span>
@@ -130,52 +140,211 @@
               </div>
             </div>
 
-            <div class="table-responsive">
-              <table class="table table-bordered text-center mb-4 text-nowrap">
-                <thead>
-                  <tr style="background-color: #0b8043; color: white;">
-                    <th style="font-weight: 500;">Identificacion</th>
-                    <th style="font-weight: 500;">Nombre</th>
-                    <th style="font-weight: 500;">Correo</th>
-                    <th style="font-weight: 500;">Ficha</th>
-                    <th style="font-weight: 500; width: 15%;">Estado</th>
-                    <th style="font-weight: 500;">Fecha De Inscripcion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php 
-                  $estadosAdmin = ['Inscrito', 'En Proceso', 'Inscrito', 'En Proceso', 'Inscrito', 'Inscrito', 'En Proceso', 'En Proceso', 'Inscrito'];
-                  foreach ($estadosAdmin as $estado) : ?>
-                  <tr>
-                    <td class="align-middle">1</td>
-                    <td class="align-middle">Ken</td>
-                    <td class="align-middle">Ken@Gmail.Com</td>
-                    <td class="align-middle">3063989</td>
-                    <td class="p-0 align-middle">
-                      <?php if($estado == 'Inscrito'): ?>
-                        <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-success text-white" style="min-height: 40px;">
-                          <i class="fas fa-check mr-2"></i> Inscrito
-                        </div>
-                      <?php else: ?>
-                        <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-warning text-dark" style="min-height: 40px;">
-                          <i class="fas fa-check mr-2"></i> En Proceso
-                        </div>
-                      <?php endif; ?>
-                    </td>
-                    <td class="align-middle">06/11/2025</td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
-            </div>
+            <div class="tab-content" id="adminTabsContent">
+              <!-- CONTENEDOR 1: Sostenimiento -->
+              <div class="tab-pane fade show active" id="tab-sost" role="tabpanel" aria-labelledby="tab-sost-btn">
+                <div class="table-responsive">
+                  <table class="table table-bordered text-center mb-4 text-nowrap">
+                    <thead>
+                      <tr style="background-color: #0b8043; color: white;">
+                        <th style="font-weight: 500;">Identificacion</th>
+                        <th style="font-weight: 500;">Nombre</th>
+                        <th style="font-weight: 500;">Correo</th>
+                        <th style="font-weight: 500;">Ficha</th>
+                        <th style="font-weight: 500; width: 15%;">Estado</th>
+                        <th style="font-weight: 500;">Fecha De Inscripcion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php 
+                      $estadosAdmin = ['Inscrito', 'En Proceso', 'Inscrito', 'En Proceso', 'Inscrito', 'En Proceso', 'Inscrito'];
+                      foreach ($estadosAdmin as $estado) : ?>
+                      <tr>
+                        <td class="align-middle">1</td>
+                        <td class="align-middle">Ken</td>
+                        <td class="align-middle">Ken@Gmail.Com</td>
+                        <td class="align-middle">3063989</td>
+                        <td class="p-0 align-middle">
+                          <?php if($estado == 'Inscrito'): ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-success text-white" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> Inscrito
+                            </div>
+                          <?php else: ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-warning text-dark" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> En Proceso
+                            </div>
+                          <?php endif; ?>
+                        </td>
+                        <td class="align-middle">06/11/2025</td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- CONTENEDOR 2: Datos -->
+              <div class="tab-pane fade" id="tab-datos" role="tabpanel" aria-labelledby="tab-datos-btn">
+                <div class="table-responsive">
+                  <table class="table table-bordered text-center mb-4 text-nowrap">
+                    <thead>
+                      <tr style="background-color: #0b8043; color: white;">
+                        <th style="font-weight: 500;">Identificacion</th>
+                        <th style="font-weight: 500;">Nombre</th>
+                        <th style="font-weight: 500;">Correo</th>
+                        <th style="font-weight: 500;">Ficha</th>
+                        <th style="font-weight: 500; width: 15%;">Estado</th>
+                        <th style="font-weight: 500;">Fecha De Inscripcion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($estadosAdmin as $estado) : ?>
+                      <tr>
+                        <td class="align-middle">2</td>
+                        <td class="align-middle">María</td>
+                        <td class="align-middle">Maria@Gmail.Com</td>
+                        <td class="align-middle">3063990</td>
+                        <td class="p-0 align-middle">
+                          <?php if($estado == 'Inscrito'): ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-success text-white" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> Inscrito
+                            </div>
+                          <?php else: ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-warning text-dark" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> En Proceso
+                            </div>
+                          <?php endif; ?>
+                        </td>
+                        <td class="align-middle">07/11/2025</td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- CONTENEDOR 3: Alimentacion -->
+              <div class="tab-pane fade" id="tab-alim" role="tabpanel" aria-labelledby="tab-alim-btn">
+                <div class="table-responsive">
+                  <table class="table table-bordered text-center mb-4 text-nowrap">
+                    <thead>
+                      <tr style="background-color: #0b8043; color: white;">
+                        <th style="font-weight: 500;">Identificacion</th>
+                        <th style="font-weight: 500;">Nombre</th>
+                        <th style="font-weight: 500;">Correo</th>
+                        <th style="font-weight: 500;">Ficha</th>
+                        <th style="font-weight: 500; width: 15%;">Estado</th>
+                        <th style="font-weight: 500;">Fecha De Inscripcion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($estadosAdmin as $estado) : ?>
+                      <tr>
+                        <td class="align-middle">3</td>
+                        <td class="align-middle">Carlos</td>
+                        <td class="align-middle">Carlos@Gmail.Com</td>
+                        <td class="align-middle">3063991</td>
+                        <td class="p-0 align-middle">
+                          <?php if($estado == 'Inscrito'): ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-success text-white" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> Inscrito
+                            </div>
+                          <?php else: ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-warning text-dark" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> En Proceso
+                            </div>
+                          <?php endif; ?>
+                        </td>
+                        <td class="align-middle">08/11/2025</td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- CONTENEDOR 4: Transporte -->
+              <div class="tab-pane fade" id="tab-trans" role="tabpanel" aria-labelledby="tab-trans-btn">
+                <div class="table-responsive">
+                  <table class="table table-bordered text-center mb-4 text-nowrap">
+                    <thead>
+                      <tr style="background-color: #0b8043; color: white;">
+                        <th style="font-weight: 500;">Identificacion</th>
+                        <th style="font-weight: 500;">Nombre</th>
+                        <th style="font-weight: 500;">Correo</th>
+                        <th style="font-weight: 500;">Ficha</th>
+                        <th style="font-weight: 500; width: 15%;">Estado</th>
+                        <th style="font-weight: 500;">Fecha De Inscripcion</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($estadosAdmin as $estado) : ?>
+                      <tr>
+                        <td class="align-middle">4</td>
+                        <td class="align-middle">Laura</td>
+                        <td class="align-middle">Laura@Gmail.Com</td>
+                        <td class="align-middle">3063992</td>
+                        <td class="p-0 align-middle">
+                          <?php if($estado == 'Inscrito'): ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-success text-white" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> Inscrito
+                            </div>
+                          <?php else: ?>
+                            <div class="w-100 h-100 d-flex justify-content-center align-items-center py-2 bg-warning text-dark" style="min-height: 40px;">
+                              <i class="fas fa-check mr-2"></i> En Proceso
+                            </div>
+                          <?php endif; ?>
+                        </td>
+                        <td class="align-middle">09/11/2025</td>
+                      </tr>
+                      <?php endforeach; ?>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div> <!-- /.tab-content -->
 
             <div class="d-flex justify-content-end">
-              <ul class="pagination mt-2">
-                <li class="page-item"><a class="page-link" href="#">Anterior</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+              <ul class="pagination mt-2" id="adminPagination">
+                <li class="page-item"><a class="page-link btn-admin-ant" href="javascript:void(0);">Anterior</a></li>
+                <li class="page-item active"><a class="page-link admin-indicador" href="javascript:void(0);">1</a></li>
+                <li class="page-item"><a class="page-link btn-admin-sig" href="javascript:void(0);">Siguiente</a></li>
               </ul>
             </div>
+
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                // Controlar opacidad de botones tipo tab
+                $('#adminTabs .nav-link').on('click', function(){
+                  $('#adminTabs .nav-link').css('opacity', '0.6').removeClass('active');
+                  $(this).css('opacity', '1').addClass('active');
+
+                  // Actualizar indicador central (1 a 4) de la paginacion
+                  var index = $(this).parent().index();
+                  $('.admin-indicador').text(index + 1);
+                });
+
+                // Avance de tabs con Siguiente
+                $('.btn-admin-sig').on('click', function(){
+                  var $active = $('#adminTabs .nav-link.active');
+                  var $next = $active.parent().next().children('.nav-link');
+                  if($next.length > 0) {
+                    $next.tab('show');
+                    $next.click();
+                  }
+                });
+
+                // Retroceso con Anterior
+                $('.btn-admin-ant').on('click', function(){
+                  var $active = $('#adminTabs .nav-link.active');
+                  var $prev = $active.parent().prev().children('.nav-link');
+                  if($prev.length > 0) {
+                    $prev.tab('show');
+                    $prev.click();
+                  }
+                });
+              });
+            </script>
           </div>
           <!-- /VISTA ADMINISTRADOR -->
 
