@@ -26,7 +26,7 @@
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <table id="tblApoyos" class="table table-bordered table-striped">
+                <table id="tblApoyos" class="table tbl-GAiA table-bordered table-striped">
                   <thead>
                   <tr>
                     <th>ID</th>
@@ -46,9 +46,9 @@
                     <td>Se les informa a los aprendices..<strong>ver mas</strong></td>
                     <td>09/25 a 01/26</td>
                     <td>300</td>
-                    <td><button class="btn btn-primary btn-sm rounded-0" style="background-color: #0d8df3; border:none; width: 90px;">PDF</button></td>
-                    <td><button class="btn btn-success btn-sm rounded-0" style="background-color: #17c42a; border:none; width: 90px;">Modificar</button></td>
-                    <td><button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button></td>
+                    <td class="text-center"><button class="btn btn-primary btn-sm rounded-0" >PDF</button></td>
+                    <td class="text-center"><button class="btn btn-success btn-sm rounded-0" >Modificar</button></td>
+                    <td class="text-center"><button class="btn btn-sm btn-outline-info border-0"><i class="fas fa-edit"></i></button></td>
                   </tr>
 
                   <tr>
@@ -57,9 +57,9 @@
                     <td>Se les informa a los aprendices..<strong>ver mas</strong></td>
                     <td>09/25 a 01/26</td>
                     <td>300</td>
-                    <td><button class="btn btn-primary btn-sm rounded-0" style="background-color: #0d8df3; border:none; width: 90px;">PDF</button></td>
-                    <td><button class="btn btn-success btn-sm rounded-0" style="background-color: #17c42a; border:none; width: 90px;">Modificar</button></td>
-                    <td><button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button></td>
+                    <td class="text-center"><button class="btn btn-primary btn-sm rounded-0" >PDF</button></td>
+                    <td class="text-center"><button class="btn btn-success btn-sm rounded-0" >Modificar</button></td>
+                    <td class="text-center"><button class="btn btn-sm btn-outline-info border-0"><i class="fas fa-edit"></i></button></td>
                   </tr>
                   
                   <tr>
@@ -68,9 +68,9 @@
                     <td>Se les informa a los aprendices..<strong>ver mas</strong></td>
                     <td>09/25 a 01/26</td>
                     <td>300</td>
-                    <td><button class="btn btn-primary btn-sm rounded-0" style="background-color: #0d8df3; border:none; width: 90px;">PDF</button></td>
-                    <td><button class="btn btn-success btn-sm rounded-0" style="background-color: #17c42a; border:none; width: 90px;">Modificar</button></td>
-                    <td><button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button></td>
+                    <td class="text-center"><button class="btn btn-primary btn-sm rounded-0" >PDF</button></td>
+                    <td class="text-center"><button class="btn btn-success btn-sm rounded-0" >Modificar</button></td>
+                    <td class="text-center"><button class="btn btn-sm btn-outline-info border-0"><i class="fas fa-edit"></i></button></td>
                   </tr>                  
 
                   <tr>
@@ -79,9 +79,9 @@
                     <td>Se les informa a los aprendices..<strong>ver mas</strong></td>
                     <td>09/25 a 01/26</td>
                     <td>300</td>
-                    <td><button class="btn btn-primary btn-sm rounded-0" style="background-color: #0d8df3; border:none; width: 90px;">PDF</button></td>
-                    <td><button class="btn btn-success btn-sm rounded-0" style="background-color: #17c42a; border:none; width: 90px;">Modificar</button></td>
-                    <td><button class="btn btn-sm btn-outline-secondary border-0"><i class="fas fa-edit"></i></button></td>
+                    <td class="text-center"><button class="btn btn-primary btn-sm rounded-0" >PDF</button></td>
+                    <td class="text-center"><button class="btn btn-success btn-sm rounded-0" >Modificar</button></td>
+                    <td class="text-center"><button class="btn btn-sm btn-outline-info border-0"><i class="fas fa-edit"></i></button></td>
                   </tr>                  
 
                   </tbody>
