@@ -49,3 +49,82 @@ VISTA IDENTIFICACION DE APOYOS
     background-color: #1a1a1a !important;
     border-color: #1a1a1a !important;
 }
+
+/*=============================================
+MODALES DE APOYOS - ESTILO SECONDARY 
+=============================================*/
+#vista-identificacion .modal-content.apoyo-modal-secundario {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-header {
+    background-color: #6c757d;
+    border-bottom: 1px solid #5c636a;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-header .modal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #ffffff;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-header .modal-title i {
+    margin-right: 0.5rem;
+    color: #ffffff;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-body {
+    background-color: #6c757d;
+    color: #ffffff;
+    padding: 1.5rem;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-body p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-body .font-weight-bold {
+    font-weight: 600;
+    color: #ffffff;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-footer {
+    background-color: #6c757d;
+    border-top: 1px solid #5c636a;
+    padding: 1rem 1.5rem;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-footer .btn-outline-light {
+    color: #ffffff;
+    border-color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+#vista-identificacion .apoyo-modal-secundario .modal-footer .btn-outline-light:hover {
+    background-color: #ffffff;
+    color: #6c757d;
+    border-color: #ffffff;
+}
+
+#vista-identificacion .apoyo-modal-secundario .close {
+    color: #ffffff;
+    opacity: 0.8;
+    text-shadow: none;
+}
+
+#vista-identificacion .apoyo-modal-secundario .close:hover,
+#vista-identificacion .apoyo-modal-secundario .close:focus {
+    color: #ffffff;
+    opacity: 1;
+}
