@@ -22,6 +22,9 @@
     <link rel="stylesheet" href="vistas/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="vistas/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 
+    <!-- Estilos Personalizados de la App -->
+    <link rel="stylesheet" href="vistas/css/plantilla.css">
+
     <!-- ************************************************************ -->
 
     <!-- REQUIRED SCRIPTS -->
