@@ -21,7 +21,7 @@ class ModeloUsuarios{
     // LISA DE DE USUARIOS EN LA VENTANA PRINCIPAL
     // ************************************    
     static public function mdlListarUsuarios(){
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id = u.ficha_id WHERE u.rol<>'ADMIN';");
+        $stmt = Conexion::conectar()->prepare("SELECT u.*, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.fichas_id WHERE u.rol<>'ADMIN';");
         $stmt->execute();
         return $stmt->fetchAll();    
     }
