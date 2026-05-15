@@ -24,7 +24,7 @@ class ModeloUsuarios
     // ************************************    
     static public function mdlListarUsuarios()
     {
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.ficha_id WHERE u.rol<>'Administrador';");
+        $stmt = Conexion::conectar()->prepare("SELECT u.*, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.fichas_id WHERE u.rol<>'Administrador';");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -45,7 +45,7 @@ class ModeloUsuarios
     static public function mdlAgregarUsuario($tabla, $datos)
     {
 
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, ficha_id) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id)");
+        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, fichas_id) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id)");
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
         $stmt->bindParam(":nombres", $datos["nombres"], PDO::PARAM_STR);
@@ -76,7 +76,7 @@ class ModeloUsuarios
     // ************************************    
     static public function mdlEditarUsuario($tabla, $datos)
     {
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, ficha_id = :ficha_id WHERE id = :id");
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, fichas_id = :ficha_id WHERE id = :id");
         
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
