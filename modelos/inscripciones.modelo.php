@@ -10,11 +10,11 @@ class ModeloInscripciones {
     // ==============================================
     static public function mdlListarPostulacionesUsuario($tablaInscripciones, $tablaConvocatorias, $tablaApoyos, $usuarioId) {
         $stmt = Conexion::conectar()->prepare("SELECT i.*, c.fecha_inicio, c.fecha_fin, a.descripcion_apoyo, a.apoyo_icono 
-                                               FROM $tablaInscripciones i 
-                                               INNER JOIN $tablaConvocatorias c ON i.convocatoria_id = c.id 
-                                               INNER JOIN $tablaApoyos a ON c.apoyo_id = a.id_apoyo 
-                                               WHERE i.usuario_id = :usuario_id 
-                                               ORDER BY i.fecha_postulacion DESC");
+                               FROM $tablaInscripciones i 
+                               INNER JOIN $tablaConvocatorias c ON i.convocatoria_id = c.id 
+                               INNER JOIN $tablaApoyos a ON c.apoyo_id = a.id_apoyo 
+                               WHERE i.usuario_id = :usuario_id 
+                               ORDER BY i.id DESC");
         $stmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
