@@ -12,7 +12,7 @@ class ModeloUsuarios
     // ************************************
     static public function mdlIngresarUsuario($documento)
     {
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id FROM usuarios u WHERE documento_id = :documento");
+        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto FROM usuarios u WHERE documento_id = :documento");
         $stmt->bindParam(":documento", $documento, PDO::PARAM_STR);
         $stmt->execute();
         return $stmt->fetch();
@@ -24,7 +24,7 @@ class ModeloUsuarios
     // ************************************    
     static public function mdlListarUsuarios()
     {
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.fichas_id WHERE u.rol<>'Administrador';");
+        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.fichas_id WHERE u.rol<>'Administrador';");
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -44,7 +44,7 @@ class ModeloUsuarios
     // ************************************    
         static public function mdlAgregarUsuario($tabla, $datos)
         {
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, fichas_id, foto) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id, :foto)");
+        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, fichas_id, doc_identidad_maestro_url) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id, :foto)");
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
         $stmt->bindParam(":nombres", $datos["nombres"], PDO::PARAM_STR);
@@ -65,7 +65,7 @@ class ModeloUsuarios
     static public function mdlMostrarUsuarios($tabla, $item, $valor)
     {
         if ($tabla === "usuarios") {
-            $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id FROM $tabla u WHERE $item = :valor");
+            $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto FROM $tabla u WHERE $item = :valor");
         } else {
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :valor");
         }
@@ -80,7 +80,7 @@ class ModeloUsuarios
     // ************************************    
         static public function mdlEditarUsuario($tabla, $datos)
         {
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, fichas_id = :ficha_id, foto = :foto WHERE id = :id");
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, fichas_id = :ficha_id, doc_identidad_maestro_url = :foto WHERE id = :id");
         
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
@@ -106,7 +106,7 @@ class ModeloUsuarios
     // ************************************    
     static public function mdlEditarPerfil($tabla, $datos)
     {
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombres = :nombres, apellidos = :apellidos, password = :password, foto = :foto WHERE id = :id");
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET nombres = :nombres, apellidos = :apellidos, password = :password, doc_identidad_maestro_url = :foto WHERE id = :id");
         
         $stmt->bindParam(":nombres", $datos["nombres"], PDO::PARAM_STR);
         $stmt->bindParam(":apellidos", $datos["apellidos"], PDO::PARAM_STR);
