@@ -108,6 +108,7 @@
           $_GET["ruta"] == "inicio" ||
           $_GET["ruta"] == "puntuacion" ||
           $_GET["ruta"] == "apoyos" ||
+          $_GET["ruta"] == "convocatorias" ||
           $_GET["ruta"] == "sedes" ||
           $_GET["ruta"] == "fichas" ||
           $_GET["ruta"] == "identificacion" ||
@@ -115,6 +116,7 @@
           $_GET["ruta"] == "verificacion" ||
           $_GET["ruta"] == "reportes" ||
           $_GET["ruta"] == "inscripciones" ||
+          $_GET["ruta"] == "inscripciones2" ||
           $_GET["ruta"] == "Usuarios" ||
           $_GET["ruta"] == "Salir"
 
@@ -145,7 +147,12 @@
   <script src="vistas/js/usuarios.js"></script>
   <script src="vistas/js/sedes.js"></script>
   <script src="vistas/js/fichas.js"></script>
-  <script src="vistas/js/styles.css"></script>
+  <script src="vistas/js/apoyos.js"></script>
+  <script src="vistas/js/convocatorias.js"></script>
+  <script src="vistas/js/inscripciones.js"></script>
+  <script src="vistas/js/inscripciones2.js"></script>
+  <script src="vistas/js/verificacion.js"></script>
+  <!-- <script src="vistas/js/styles.css"></script> -->
 
 
 

@@ -1,3 +1,5 @@
 AdminLTE/
 .htaccess
 modelos/conexion.php
+documentos/*
+!documentos/anonimo/

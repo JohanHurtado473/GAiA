@@ -134,6 +134,22 @@ $(document).on("click", ".btnEditarUsuario", function() {
             });
 
             $("#passwordActual").val(respuesta["password"]);
+            $("#fotoActualEditar").val(respuesta["foto"]);
+
+            if(respuesta["foto"] != "" && respuesta["foto"] != null){
+                $(".previsualizarEditar").attr("src", respuesta["foto"]);
+            } else {
+                $(".previsualizarEditar").attr("src", "documentos/anonimo/anonimo.png");
+            }
+
+            // Mostrar opcion de eliminar foto si no es la por defecto
+            if(respuesta["foto"] != "" && respuesta["foto"] != "documentos/anonimo/anonimo.png" && respuesta["foto"] != null){
+                $("#divEliminarFoto").show();
+                $("#eliminarFotoUsuario").prop("checked", false);
+            } else {
+                $("#divEliminarFoto").hide();
+                $("#eliminarFotoUsuario").prop("checked", false);
+            }
 
             // Lógica para Aprendiz
             if(respuesta["rol"] === "Aprendiz" || respuesta["rol"] === "APRENDIZ"){
@@ -250,4 +266,46 @@ $(document).on("click", ".btnConsultarUsuario", function() {
             }
         }
     });
+});
+
+/*=============================================
+SUBIENDO LA FOTO DEL USUARIO (PREVISUALIZACIÓN Y VALIDACIÓN)
+=============================================*/
+$(document).on("change", ".nuevaFoto", function() {
+    let imagen = this.files[0];
+    if (!imagen) {
+        return;
+    }
+
+    /*=============================================
+    VALIDAMOS EL FORMATO DE LA IMAGEN SEA JPG O PNG
+    =============================================*/
+    if (imagen["type"] !== "image/jpeg" && imagen["type"] !== "image/png") {
+        $(this).val("");
+        Swal.fire({
+            icon: 'error',
+            title: '¡Error al subir la imagen!',
+            text: 'La imagen debe estar en formato JPG o PNG',
+            confirmButtonText: 'Cerrar'
+        });
+    } else if (imagen["size"] > 4194304) { // 4MB MAX
+        $(this).val("");
+        Swal.fire({
+            icon: 'error',
+            title: '¡Error al subir la imagen!',
+            text: 'La imagen no debe pesar más de 4MB',
+            confirmButtonText: 'Cerrar'
+        });
+    } else {
+        let datosImagen = new FileReader();
+        datosImagen.readAsDataURL(imagen);
+
+        let inputElement = $(this);
+        $(datosImagen).on("load", function(event) {
+            let rutaImagen = event.target.result;
+            // Busca la imagen previsualizar correspondiente dentro del mismo form-group
+            inputElement.closest(".form-group").find(".previsualizar").attr("src", rutaImagen);
+            inputElement.closest(".form-group").find(".previsualizarEditar").attr("src", rutaImagen);
+        });
+    }
 });

@@ -101,7 +101,7 @@ AGREGAR USUARIO   -->
                   </button>
               </div>
               <div class="modal-body">
-                  <form action="" method="post">
+                  <form action="" method="post" enctype="multipart/form-data">
 
                       <div class="form-group">
                           <div class="row">
@@ -166,6 +166,14 @@ AGREGAR USUARIO   -->
                           </select>
                       </div>
 
+                      <!-- FOTO -->
+                      <div class="form-group">
+                          <div class="panel font-weight-bold">SUBIR FOTO</div>
+                          <input type="file" class="nuevaFoto" name="nuevaFoto">
+                          <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
+                          <img src="documentos/anonimo/anonimo.png" class="img-thumbnail previsualizar" width="100px">
+                      </div>
+
                       <div class="input-group mb-3" id="divFicha" style="display: none;">
                           <div class="input-group-prepend">
                               <span class="input-group-text"><i class="fas fa-list-ol"></i></span>
@@ -219,8 +227,25 @@ EDITAR USUARIO   -->
                   </button>
               </div>
               <div class="modal-body">
-                  <form action="" method="post">
+                  <form action="" method="post" enctype="multipart/form-data">
                       <input type="hidden" name="idUsuarioEditar" id="idUsuarioEditar">
+                      <input type="hidden" name="fotoActualEditar" id="fotoActualEditar">
+
+                      <!-- ELIMINAR FOTO -->
+                      <div class="form-group" id="divEliminarFoto" style="display: none;">
+                          <div class="custom-control custom-checkbox">
+                              <input class="custom-control-input" type="checkbox" id="eliminarFotoUsuario" name="eliminarFotoUsuario" value="si">
+                              <label for="eliminarFotoUsuario" class="custom-control-label">Eliminar foto del usuario (volver a anónima)</label>
+                          </div>
+                      </div>
+
+                      <!-- FOTO -->
+                      <div class="form-group">
+                          <div class="panel font-weight-bold">CAMBIAR FOTO</div>
+                          <input type="file" class="nuevaFoto" name="editarFoto">
+                          <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
+                          <img src="documentos/anonimo/anonimo.png" class="img-thumbnail previsualizar previsualizarEditar" width="100px">
+                      </div>
 
                       <div class="form-group">
                           <div class="row">
