@@ -9,7 +9,8 @@ class ControladorUsuarios{
         if (isset($_POST["ingDocumento"])){
             if (
                 preg_match('/^[0-9]+$/', $_POST["ingDocumento"]) &&
-                preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])
+                // Allow printable characters in password to support existing passwords with symbols
+                preg_match('/^[\x20-\x7E]+$/', $_POST["ingPassword"])
             ){
                 $documento = $_POST["ingDocumento"];
                 $respuesta = ModeloUsuarios::mdlIngresarUsuario($documento);
@@ -18,12 +19,34 @@ class ControladorUsuarios{
                  //var_dump($tempo);
                  //exit;
 
-                $passEncriptado=crypt($_POST["ingPassword"],'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
+                $inputPassword = $_POST["ingPassword"];
+                $passEncriptado=crypt($inputPassword,'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
 
                 if (is_array($respuesta)){
-                    //preguntar si el usuario esta activo
+                    // preguntar si el usuario esta activo
                     if ($respuesta["estado"]== "activo"){
-                        if ($respuesta["password"] == $passEncriptado && $respuesta["documento_id"]== $documento){
+                        // Aceptar tanto el hash almacenado como contraseñas en texto plano
+                        $storedPassword = isset($respuesta["password"]) ? $respuesta["password"] : null;
+                        $passwordMatches = false;
+                        if ($storedPassword !== null) {
+                            if ($storedPassword == $passEncriptado) {
+                                $passwordMatches = true;
+                            } elseif ($storedPassword == $inputPassword) {
+                                // contraseña almacenada en claro; aceptamos el login
+                                $passwordMatches = true;
+                            }
+                        }
+
+                        if ($passwordMatches && $respuesta["documento_id"]== $documento){
+                            // Si la contraseña almacenada es exactamente la contraseña en claro,
+                            // re-hashearla y actualizar la BD para migrar a formato seguro.
+                            if ($storedPassword === $inputPassword) {
+                                // generar hash
+                                $nuevoHash = crypt($inputPassword,'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
+                                // actualizar en la BD (método de modelo)
+                                ModeloUsuarios::mdlActualizarPassword($respuesta["id"], $nuevoHash);
+                            }
+
                             $_SESSION["iniciarSesion"] = "ok";
                             $_SESSION["id"] = $respuesta["id"];
                             $_SESSION["documento"] = $respuesta["documento_id"];
@@ -34,14 +57,13 @@ class ControladorUsuarios{
                             $_SESSION["foto"] = $respuesta["foto"];
                             echo "<script>window.location = 'inicio';</script>";
                         } else{
-                        // var_dump($respuesta);
-                        echo  "<br><div class='alert alert-danger'>Usuario o contraseña incorrecto</div>";
-                        return;
-                        }   
+                            echo  "<br><div class='alert alert-danger'>Usuario o contraseña incorrecto</div>";
+                            return;
+                        }
                     } else {
-                        echo  "<br><div class='alert alert-warning'>El usuario esta inactivo</div>";
+                        // Usuario inactivo: no mostrar mensaje adicional (comportamiento original restaurado)
                         return;
-                    }                   
+                    }
                 } else {
                     // El usuario no existe en la base de datos
                     echo "<script>

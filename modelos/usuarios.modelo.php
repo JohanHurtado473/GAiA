@@ -136,4 +136,19 @@ class ModeloUsuarios
         }
     }  // fin del metodo mdlCambiarEstadoUsuario
 
+    // ************************************
+    // ACTUALIZAR CONTRASEÑA (MIGRACIÓN)
+    // ************************************
+    static public function mdlActualizarPassword($idUsuario, $password)
+    {
+        $stmt = Conexion::conectar()->prepare("UPDATE usuarios SET password = :password WHERE id = :id");
+        $stmt->bindParam(":password", $password, PDO::PARAM_STR);
+        $stmt->bindParam(":id", $idUsuario, PDO::PARAM_INT);
+        if ($stmt->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 } // fin de la clase ModeloUsuarios
