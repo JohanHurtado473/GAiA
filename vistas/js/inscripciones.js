@@ -486,4 +486,119 @@ $(document).ready(function() {
         });
     });
 
+    // =========================================================================================
+    // LÓGICA DE CARGA BANCARIA (DOBLE PERFIL FINANCIERA)
+    // =========================================================================================
+
+    // 1. Abrir Modal y setear ID
+    $(document).on("click", ".btn-cargar-banco", function() {
+        const idInscripcion = $(this).data("id-inscripcion");
+        $("#id_inscripcion_banco").val(idInscripcion);
+        $("#frmCargarBanco")[0].reset();
+        $("#certificacion_pdf").next('.custom-file-label').html('Seleccionar Archivo');
+    });
+
+    // 1.5. Mostrar nombre del archivo seleccionado
+    $(document).on("change", "#certificacion_pdf", function(e) {
+        if(e.target.files.length > 0) {
+            let fileName = e.target.files[0].name;
+            $(this).next('.custom-file-label').html(fileName);
+        } else {
+            $(this).next('.custom-file-label').html('Seleccionar Archivo');
+        }
+    });
+
+    // 2. Restricción: Solo números en campos de cuenta
+    $(document).on("input", ".input-numero-cuenta", function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+    });
+
+    // 3. Bloquear copiar y pegar en confirmar cuenta
+    $(document).on("paste", "#confirmar_cuenta", function(e) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'warning',
+            title: 'Acción Bloqueada',
+            text: 'Por favor, digite el número de cuenta manualmente para evitar errores.',
+            background: '#343a40',
+            confirmButtonColor: '#ffc107'
+        });
+    });
+
+    // 4. Submit y validación de formulario
+    $(document).on("submit", "#frmCargarBanco", function(e) {
+        e.preventDefault();
+
+        const cuenta1 = $("#numero_cuenta").val();
+        const cuenta2 = $("#confirmar_cuenta").val();
+        const archivo = $("#certificacion_pdf")[0].files[0];
+
+        // Validar coincidencia
+        if (cuenta1 !== cuenta2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Las cuentas no coinciden',
+                text: 'El número de cuenta y su confirmación deben ser exactamente iguales.',
+                background: '#343a40',
+                confirmButtonColor: '#dc3545'
+            });
+            return;
+        }
+
+        // Validar PDF y tamaño
+        if (!archivo) {
+            Swal.fire({icon: 'error', title: 'Archivo Requerido', text: 'Debe seleccionar un documento PDF.', background: '#343a40'});
+            return;
+        } else {
+            const ext = archivo.name.split('.').pop().toLowerCase();
+            if (ext !== 'pdf' || archivo.type !== 'application/pdf') {
+                Swal.fire({icon: 'error', title: 'Solo PDF', text: 'El documento debe ser un PDF.', background: '#343a40'});
+                return;
+            }
+            if (archivo.size > 2 * 1024 * 1024) {
+                Swal.fire({icon: 'error', title: 'Archivo muy pesado', text: 'El PDF supera los 2MB permitidos.', background: '#343a40'});
+                return;
+            }
+        }
+
+        // AJAX
+        const formData = new FormData(this);
+        formData.append("action", "subirCertificacionBancaria");
+
+        // Cambiar estado de botón
+        const $btn = $(".btn-guardar-banco");
+        $btn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+
+        $.ajax({
+            url: "ajax/inscripciones.ajax.php", // Usaremos el de inscripciones
+            method: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function(respuesta) {
+                if (respuesta.status === "success") {
+                    $("#modalCargarBanco").modal('hide');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Documento Enviado',
+                        text: 'Su certificación ha sido cargada y está en revisión por Financiera.',
+                        background: '#343a40',
+                        confirmButtonColor: '#28a745'
+                    }).then(() => {
+                        window.location = "inscripciones";
+                    });
+                } else {
+                    Swal.fire({icon: 'error', title: 'Error', text: respuesta.message, background: '#343a40'});
+                    $btn.prop("disabled", false).html('<i class="fas fa-save mr-1"></i> Guardar y Enviar');
+                }
+            },
+            error: function() {
+                Swal.fire({icon: 'error', title: 'Error de Red', text: 'Fallo al comunicarse con el servidor.', background: '#343a40'});
+                $btn.prop("disabled", false).html('<i class="fas fa-save mr-1"></i> Guardar y Enviar');
+            }
+        });
+    });
+
 });

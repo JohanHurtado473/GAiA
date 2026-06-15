@@ -32,6 +32,16 @@ class ModeloInscripciones {
     }
 
     // ==============================================
+    // MOSTRAR INSCRIPCION POR ID
+    // ==============================================
+    static public function mdlMostrarInscripcionPorId($tabla, $id) {
+        $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE id = :id");
+        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    // ==============================================
     // CREAR INSCRIPCION INICIAL (ESTADO PENDIENTE)
     // ==============================================
     static public function mdlCrearInscripcion($tabla, $datos) {
@@ -98,6 +108,30 @@ class ModeloInscripciones {
     static public function mdlLimpiarDocumento($tabla, $idDoc) {
         $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET url_copia = NULL, estado = 'PENDIENTE', observacion_gestora = NULL WHERE id = :id");
         $stmt->bindParam(":id", $idDoc, PDO::PARAM_INT);
+        if ($stmt->execute()) {
+            return "ok";
+        } else {
+            return "error";
+        }
+    }
+
+    // ==============================================
+    // ACTUALIZAR DATOS BANCARIOS
+    // ==============================================
+    static public function mdlActualizarDatosBancarios($tabla, $datos) {
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET 
+            banco = :banco, 
+            numero_cuenta = :numero_cuenta, 
+            documento_bancario_url = :documento_bancario_url, 
+            estado = :estado 
+            WHERE id = :id");
+        
+        $stmt->bindParam(":banco", $datos["banco"], PDO::PARAM_STR);
+        $stmt->bindParam(":numero_cuenta", $datos["numero_cuenta"], PDO::PARAM_STR);
+        $stmt->bindParam(":documento_bancario_url", $datos["documento_bancario_url"], PDO::PARAM_STR);
+        $stmt->bindParam(":estado", $datos["estado"], PDO::PARAM_STR);
+        $stmt->bindParam(":id", $datos["id_inscripcion"], PDO::PARAM_INT);
+
         if ($stmt->execute()) {
             return "ok";
         } else {

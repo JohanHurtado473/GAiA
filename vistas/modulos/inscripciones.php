@@ -302,6 +302,23 @@ $estadoUsuarioStr = ($datosUsuarioLogueado && isset($datosUsuarioLogueado["estad
                                                         $estadoVisualBadge = '<span class="badge badge-success font-weight-bold px-2 py-1" style="border-radius:4px;"><i class="fas fa-check-double mr-1"></i> Beneficiado</span>';
                                                         $obsTexto = "¡Asignado! El beneficio ha sido aprobado de manera oficial.";
                                                         break;
+                                                    case 'BENEFICIADO_PENDIENTE_DOC':
+                                                        $estadoVisualBadge = '<span class="badge badge-warning text-dark font-weight-bold px-2 py-1" style="border-radius:4px;"><i class="fas fa-file-invoice-dollar mr-1"></i> Falta Doc Bancario</span>';
+                                                        // Si hay observación de rechazo, mostrarla
+                                                        if (!empty($post["observacion_rechazo_financiera"])) {
+                                                            $obsTexto = "<strong>Rechazado por Financiera:</strong> " . $post["observacion_rechazo_financiera"];
+                                                        } else {
+                                                            $obsTexto = "Por favor, carga tu certificación bancaria para programar los desembolsos.";
+                                                        }
+                                                        break;
+                                                    case 'DOCUMENTO_BANCARIO_CARGADO':
+                                                        $estadoVisualBadge = '<span class="badge badge-info font-weight-bold px-2 py-1" style="border-radius:4px;"><i class="fas fa-search-dollar mr-1"></i> En Revisión</span>';
+                                                        $obsTexto = "Tu documento bancario está siendo validado por Financiera.";
+                                                        break;
+                                                    case 'APROBADO_FINANCIERA':
+                                                        $estadoVisualBadge = '<span class="badge badge-success font-weight-bold px-2 py-1" style="border-radius:4px;"><i class="fas fa-hand-holding-usd mr-1"></i> Aprobado Financiera</span>';
+                                                        $obsTexto = "Tus desembolsos están oficialmente programados.";
+                                                        break;
                                                     case 'RETIRADO':
                                                         $estadoVisualBadge = '<span class="badge badge-danger font-weight-bold px-2 py-1" style="border-radius:4px;"><i class="fas fa-user-times mr-1"></i> Retirado</span>';
                                                         $obsTexto = "Solicitud retirada del sistema.";
@@ -337,6 +354,14 @@ $estadoUsuarioStr = ($datosUsuarioLogueado && isset($datosUsuarioLogueado["estad
                                                                 data-fechas="<?php echo $rangoConvocatoria; ?>"
                                                                 title="Subir / Corregir Archivos">
                                                             <i class="fas fa-upload mr-1"></i> <?php echo $tieneCorrecciones ? 'Corregir' : 'Ver / Cargar'; ?>
+                                                        </button>
+                                                    <?php elseif ($post["estado"] == 'BENEFICIADO_PENDIENTE_DOC'): ?>
+                                                        <button class="btn btn-sm btn-outline-warning text-warning btn-cargar-banco" 
+                                                                data-id-inscripcion="<?php echo $post["id"]; ?>"
+                                                                data-apoyo="<?php echo $post["descripcion_apoyo"]; ?>"
+                                                                title="Cargar Certificación Bancaria"
+                                                                data-toggle="modal" data-target="#modalCargarBanco">
+                                                            <i class="fas fa-upload mr-1"></i> Cargar Doc
                                                         </button>
                                                     <?php else: ?>
                                                         <span class="text-muted" style="font-size: 0.85rem;"><i class="fas fa-lock mr-1"></i> Bloqueado</span>
@@ -407,6 +432,75 @@ $estadoUsuarioStr = ($datosUsuarioLogueado && isset($datosUsuarioLogueado["estad
 
     </div>
 </section>
+
+<!-- ========================================================================================================
+MODAL CARGA CERTIFICACIÓN BANCARIA
+========================================================================================================= -->
+<div class="modal fade" id="modalCargarBanco" tabindex="-1" role="dialog" aria-labelledby="modalCargarBancoLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-dark border-secondary">
+            <form role="form" id="frmCargarBanco" enctype="multipart/form-data">
+                <div class="modal-header border-bottom border-secondary" style="background-color: #343a40;">
+                    <h5 class="modal-title font-weight-bold text-white" id="modalCargarBancoLabel">
+                        <i class="fas fa-file-invoice-dollar mr-2 text-success"></i>Cargar Certificación Bancaria
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-4" style="background-color: #2b3035;">
+                    <input type="hidden" id="id_inscripcion_banco" name="id_inscripcion_banco">
+                    
+                    <div class="alert alert-info border border-info p-2 mb-4" style="font-size: 0.85rem; border-radius: 8px;">
+                        <i class="fas fa-info-circle mr-1"></i> Recuerde que la cuenta bancaria debe estar a su nombre y el archivo PDF no puede pesar más de 2MB.
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="text-light font-weight-bold"><i class="fas fa-university mr-1"></i> Entidad Bancaria <span class="text-danger">*</span></label>
+                        <select class="form-control bg-dark text-white border-secondary select2" id="entidad_bancaria" name="entidad_bancaria" required>
+                            <option value="">Seleccione una entidad...</option>
+                            <option value="Bancolombia">Bancolombia</option>
+                            <option value="Nequi">Nequi</option>
+                            <option value="Davivienda">Davivienda</option>
+                            <option value="Daviplata">Daviplata</option>
+                            <option value="Banco de Bogotá">Banco de Bogotá</option>
+                            <option value="BBVA">BBVA</option>
+                            <option value="Banco Popular">Banco Popular</option>
+                            <option value="Banco de Occidente">Banco de Occidente</option>
+                            <option value="Banco AV Villas">Banco AV Villas</option>
+                            <option value="Banco Agrario">Banco Agrario</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="text-light font-weight-bold"><i class="fas fa-hashtag mr-1"></i> Número de Cuenta <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary input-numero-cuenta" id="numero_cuenta" name="numero_cuenta" placeholder="Ingrese sin guiones ni espacios" required autocomplete="off">
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="text-light font-weight-bold"><i class="fas fa-check-double mr-1"></i> Confirmar Número de Cuenta <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary input-numero-cuenta" id="confirmar_cuenta" name="confirmar_cuenta" placeholder="Vuelva a ingresar el número" required autocomplete="off">
+                        <small class="text-muted">No se permite copiar y pegar en este campo.</small>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label class="text-light font-weight-bold"><i class="fas fa-file-pdf mr-1"></i> Certificación (PDF) <span class="text-danger">*</span></label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input cursor-pointer" id="certificacion_pdf" name="certificacion_pdf" accept="application/pdf">
+                            <label class="custom-file-label bg-dark text-white border-secondary" for="certificacion_pdf" data-browse="Buscar">Seleccionar Archivo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary" style="background-color: #343a40;">
+                    <button type="button" class="btn btn-outline-light font-weight-bold" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success font-weight-bold btn-guardar-banco">
+                        <i class="fas fa-save mr-1"></i> Guardar y Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- ========================================================================================================
 TEMPLATES HTML

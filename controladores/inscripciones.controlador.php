@@ -187,4 +187,77 @@ class ControladorInscripciones {
         return $cadena;
     }
 
+    // ==============================================
+    // SUBIR CERTIFICACIÓN BANCARIA (DOBLE PERFIL)
+    // ==============================================
+    static public function ctrSubirCertificacionBancaria($idInscripcion, $banco, $cuenta, $file) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        if (!isset($_SESSION["id"]) || !isset($_SESSION["documento"])) {
+            return array("status" => "error", "message" => "Sesión de usuario no válida.");
+        }
+
+        $cedula = $_SESSION["documento"];
+
+        // --- 1. VALIDACIÓN DEL ARCHIVO ---
+        $ext = pathinfo($file["name"], PATHINFO_EXTENSION);
+        if (strtolower($ext) != "pdf" || $file["type"] != "application/pdf") {
+            return array("status" => "error", "message" => "Formato no permitido. Solo se admiten documentos PDF.");
+        }
+
+        $maxSize = 2 * 1024 * 1024; // 2MB
+        if ($file["size"] > $maxSize) {
+            return array("status" => "error", "message" => "El archivo supera el tamaño máximo permitido de 2 MB.");
+        }
+
+        // --- 2. PREPARAR CARPETAS Y RUTAS ---
+        $raizProyecto = dirname(__DIR__); // C:\xampp\htdocs\GAiA
+        $carpetaCedula = $raizProyecto . "/documentos/" . $cedula;
+
+        if (!file_exists($carpetaCedula)) {
+            mkdir($carpetaCedula, 0777, true);
+        }
+
+        // Obtener convocatoria_id para el nombre del archivo
+        $datosInscripcion = ModeloInscripciones::mdlMostrarInscripcionPorId("inscripciones", $idInscripcion);
+        $convocatoriaId = $datosInscripcion ? $datosInscripcion["convocatoria_id"] : "0";
+
+        // --- 3. SANITIZAR Y RENOMBRAR ARCHIVO ---
+        $nombreArchivo = "certificado_bancario_" . $cedula . "_" . $convocatoriaId . ".pdf";
+        $rutaCompletaDestino = $carpetaCedula . "/" . $nombreArchivo;
+        $rutaDB = "documentos/" . $cedula . "/" . $nombreArchivo;
+
+        // --- 4. MOVER ARCHIVO ---
+        if (move_uploaded_file($file["tmp_name"], $rutaCompletaDestino)) {
+            
+            // --- 5. ACTUALIZAR BASE DE DATOS ---
+            $datosBD = array(
+                "id_inscripcion" => $idInscripcion,
+                "banco" => $banco,
+                "numero_cuenta" => $cuenta,
+                "documento_bancario_url" => $rutaDB,
+                "estado" => "DOCUMENTO_BANCARIO_CARGADO"
+            );
+
+            $registroDB = ModeloInscripciones::mdlActualizarDatosBancarios("inscripciones", $datosBD);
+
+            if ($registroDB == "ok") {
+                return array(
+                    "status" => "success", 
+                    "message" => "Certificación bancaria cargada y en revisión.",
+                );
+            } else {
+                if (file_exists($rutaCompletaDestino)) {
+                    unlink($rutaCompletaDestino);
+                }
+                return array("status" => "error", "message" => "Error al actualizar los datos en la base de datos.");
+            }
+
+        } else {
+            return array("status" => "error", "message" => "Error al mover el archivo al servidor.");
+        }
+    }
+
 }
