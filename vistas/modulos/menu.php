@@ -198,11 +198,14 @@
                </div>
              </div>
 
-             <div class="form-group">
-               <div class="panel">CAMBIAR FOTO PERFIL</div>
-               <input type="file" class="nuevaFoto" name="editarFotoPerfil">
-               <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
-               <?php
+               <div class="form-group">
+                 <div class="panel">CAMBIAR FOTO PERFIL</div>
+                 <div class="custom-file mb-2">
+                   <input type="file" class="custom-file-input nuevaFoto" id="editarFotoPerfil" name="editarFotoPerfil" accept="image/jpeg, image/png">
+                   <label class="custom-file-label" for="editarFotoPerfil" data-browse="Elegir">Seleccionar imagen</label>
+                 </div>
+                 <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
+                 <?php
                 if (isset($_SESSION["foto"]) && $_SESSION["foto"] != "") {
                   echo '<img src="' . $_SESSION["foto"] . '" class="img-thumbnail previsualizar" width="100px">';
                 } else {

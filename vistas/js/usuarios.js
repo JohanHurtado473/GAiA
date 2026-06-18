@@ -274,8 +274,13 @@ SUBIENDO LA FOTO DEL USUARIO (PREVISUALIZACIÓN Y VALIDACIÓN)
 $(document).on("change", ".nuevaFoto", function() {
     let imagen = this.files[0];
     if (!imagen) {
+        $(this).next('.custom-file-label').html('Seleccionar imagen');
         return;
     }
+
+    // Actualizar el label del custom-file-input
+    let fileName = $(this).val().split('\\').pop();
+    $(this).next('.custom-file-label').html(fileName);
 
     /*=============================================
     VALIDAMOS EL FORMATO DE LA IMAGEN SEA JPG O PNG

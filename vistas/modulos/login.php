@@ -127,7 +127,10 @@
                     <!-- FOTO -->
                     <div class="form-group">
                         <div class="panel">SUBIR FOTO</div>
-                        <input type="file" class="nuevaFoto" name="nuevaFoto">
+                        <div class="custom-file mb-2">
+                            <input type="file" class="custom-file-input nuevaFoto" id="nuevaFotoLogin" name="nuevaFoto" accept="image/jpeg, image/png">
+                            <label class="custom-file-label" for="nuevaFotoLogin" data-browse="Elegir">Seleccionar imagen</label>
+                        </div>
                         <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
                     </div>
 
