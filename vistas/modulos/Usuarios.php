@@ -169,7 +169,10 @@ AGREGAR USUARIO   -->
                       <!-- FOTO -->
                       <div class="form-group">
                           <div class="panel font-weight-bold">SUBIR FOTO</div>
-                          <input type="file" class="nuevaFoto" name="nuevaFoto">
+                          <div class="custom-file mb-2">
+                              <input type="file" class="custom-file-input nuevaFoto" id="nuevaFoto" name="nuevaFoto" accept="image/jpeg, image/png">
+                              <label class="custom-file-label" for="nuevaFoto" data-browse="Elegir">Seleccionar imagen</label>
+                          </div>
                           <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
                           <img src="documentos/anonimo/anonimo.png" class="img-thumbnail previsualizar" width="100px">
                       </div>
@@ -242,7 +245,10 @@ EDITAR USUARIO   -->
                       <!-- FOTO -->
                       <div class="form-group">
                           <div class="panel font-weight-bold">CAMBIAR FOTO</div>
-                          <input type="file" class="nuevaFoto" name="editarFoto">
+                          <div class="custom-file mb-2">
+                              <input type="file" class="custom-file-input nuevaFoto" id="editarFoto" name="editarFoto" accept="image/jpeg, image/png">
+                              <label class="custom-file-label" for="editarFoto" data-browse="Elegir">Seleccionar imagen</label>
+                          </div>
                           <p class="help-block">Peso máximo de la foto 4MB (Formatos: JPG o PNG)</p>
                           <img src="documentos/anonimo/anonimo.png" class="img-thumbnail previsualizar previsualizarEditar" width="100px">
                       </div>

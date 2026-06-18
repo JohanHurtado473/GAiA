@@ -1,5 +1,11 @@
-<!-- Content Wrapper. Contains page content -->
-<!-- <div class="content-wrapper"> -->
+<?php
+// Obtener convocatorias que tienen asignaciones
+$convocatoriasActivas = ControladorFinanciera::ctrListarConvocatoriasFinanciera();
+
+// Obtener pendientes bancarios
+$pendientesBancarios = ControladorFinanciera::ctrListarPendientesBancarios();
+?>
+
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <div class="container-fluid">
@@ -19,553 +25,234 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Apoyo de sostenimiento</h3>
+    
+    <!-- PESTAÑAS (TABS) AL ESTILO INSCRIPCIONES -->
+    <div id="panel-financiera" class="card card-dark card-tabs bg-dark border border-secondary shadow">
+        <div class="card-header p-0 pt-1 border-bottom-0" style="background-color: #343a40;">
+            <ul class="nav nav-tabs" id="tabFinanciera" role="tablist">
+                <!-- PESTAÑA FIJA PARA REVISIÓN BANCARIA -->
+                <li class="nav-item">
+                    <a class="nav-link active font-weight-bold text-uppercase" 
+                       id="tab-revision-bancaria-tab" 
+                       data-toggle="pill" 
+                       href="#tab-revision-bancaria" 
+                       role="tab" 
+                       aria-controls="tab-revision-bancaria" 
+                       aria-selected="true" 
+                       style="padding: 12px 20px;">
+                        <i class="fas fa-file-invoice-dollar mr-2 text-warning"></i> 
+                        Revisión Bancaria 
+                        <?php if(count($pendientesBancarios) > 0): ?>
+                            <span class="badge badge-danger ml-1"><?php echo count($pendientesBancarios); ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+
+                <!-- PESTAÑAS DINÁMICAS POR CONVOCATORIA (BENEFICIARIOS) -->
+                <?php foreach ($convocatoriasActivas as $key => $conv): ?>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold text-uppercase" 
+                           id="tab-conv-<?php echo $conv['id']; ?>-tab" 
+                           data-toggle="pill" 
+                           href="#tab-conv-<?php echo $conv['id']; ?>" 
+                           role="tab" 
+                           aria-controls="tab-conv-<?php echo $conv['id']; ?>" 
+                           aria-selected="false" 
+                           style="padding: 12px 20px;">
+                            <i class="<?php echo $conv["apoyo_icono"] ? $conv["apoyo_icono"] : "fas fa-hand-holding-heart"; ?> mr-2 text-success"></i> 
+                            <?php echo $conv["descripcion_apoyo"]; ?>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
         </div>
+        
+        <div class="card-body" style="background-color: #2b3035;">
+            <div class="tab-content" id="tabFinancieraContent">
+                
+                <!-- CONTENIDO PESTAÑA FIJA REVISIÓN BANCARIA -->
+                <div class="tab-pane fade show active" 
+                     id="tab-revision-bancaria" 
+                     role="tabpanel" 
+                     aria-labelledby="tab-revision-bancaria-tab">
+                    
+                    <h3 class="mb-4 text-white">Documentos Bancarios Pendientes de Revisión</h3>
 
-        <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-bordered dt-responsive nowrap tabla-beneficiarios" style="width:100%">
+                            <thead style="background-color: #ffc107; color: black;">
+                                <tr>
+                                    <th>Identificación</th>
+                                    <th>Aprendiz</th>
+                                    <th>Programa</th>
+                                    <th>Apoyo</th>
+                                    <th>Banco</th>
+                                    <th>Cuenta</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if(count($pendientesBancarios) > 0): ?>
+                                    <?php foreach ($pendientesBancarios as $pend): ?>
+                                        <tr>
+                                            <td><?php echo $pend["identificacion"]; ?></td>
+                                            <td><?php echo $pend["aprendiz"]; ?></td>
+                                            <td><?php echo $pend["programa_formacion"]; ?></td>
+                                            <td><?php echo $pend["descripcion_apoyo"]; ?></td>
+                                            <td><?php echo $pend["banco"]; ?></td>
+                                            <td><?php echo $pend["numero_cuenta"]; ?></td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <a href="<?php echo $pend['documento_bancario_url']; ?>" target="_blank" class="btn btn-info btn-sm" title="Ver Documento">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <button class="btn btn-success btn-sm btn-aprobar-banco" 
+                                                            data-id-inscripcion="<?php echo $pend['inscripcion_id']; ?>" 
+                                                            title="Aprobar y Crear Asignación">
+                                                        <i class="fas fa-check"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm btn-rechazar-banco" 
+                                                            data-id-inscripcion="<?php echo $pend['inscripcion_id']; ?>" 
+                                                            title="Devolver al Aprendiz">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <!-- BOTONES SUPERIORES -->
-            <div class="mb-3">
-                <button class="btn btn-success mr-2 mb-2">
-                    <i class="fas fa-lock"></i> Apoyo de sostenimiento
-                </button>
+                <?php if (count($convocatoriasActivas) === 0): ?>
+                    <!-- Opcional: mostrar algo si no hay convocatorias activas -->
+                <?php else: ?>
+                    <?php foreach ($convocatoriasActivas as $key => $conv): 
+                        // Obtener los beneficiarios de esta convocatoria usando el nuevo controlador
+                        $beneficiarios = ControladorFinanciera::ctrMostrarBeneficiarios($conv["id"]);
+                    ?>
+                        <div class="tab-pane fade" 
+                             id="tab-conv-<?php echo $conv['id']; ?>" 
+                             role="tabpanel" 
+                             aria-labelledby="tab-conv-<?php echo $conv['id']; ?>-tab">
+                            
+                            <h3 class="mb-4 text-white"><?php echo $conv["descripcion_apoyo"]; ?></h3>
 
-                <button class="btn btn-success mr-2 mb-2">
-                    <i class="fas fa-car"></i> Apoyo de transporte
-                </button>
+                            <div class="table-responsive">
+                                <table id="tblBeneficiarios_<?php echo $conv['id']; ?>" class="table table-dark table-striped table-bordered dt-responsive nowrap tabla-beneficiarios" style="width:100%">
+                                    <thead style="background-color: #198754; color: white;">
+                                        <tr>
+                                            <th>Identificación</th>
+                                            <th>Aprendiz</th>
+                                            <th>Ficha</th>
+                                            <th>Programa</th>
+                                            <th>Meses</th>
+                                            <th>Inicio Pago</th>
+                                            <th>Fin Pago</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($beneficiarios as $ben): ?>
+                                            <tr>
+                                                <td><?php echo $ben["identificacion"]; ?></td>
+                                                <td><?php echo $ben["aprendiz"]; ?></td>
+                                                <td><?php echo $ben["codigo_ficha"]; ?></td>
+                                                <td><?php echo $ben["programa_formacion"]; ?></td>
+                                                <td><?php echo $ben["meses_beneficio"]; ?></td>
+                                                <td><?php echo $ben["fecha_inicio_pago"]; ?></td>
+                                                <td><?php echo $ben["fecha_fin_pago"]; ?></td>
+                                                <td class="text-center">
+                                                    <?php 
+                                                        $estadoClass = "btn-success";
+                                                        if(strtoupper($ben["estado_asignacion"]) == "PENDIENTE") {
+                                                            $estadoClass = "btn-warning text-dark";
+                                                        } else if (strtoupper($ben["estado_asignacion"]) == "CANCELADO" || strtoupper($ben["estado_asignacion"]) == "RECHAZADO") {
+                                                            $estadoClass = "btn-danger";
+                                                        }
+                                                    ?>
+                                                    <button class="btn <?php echo $estadoClass; ?> btn-sm"><?php echo $ben["estado_asignacion"]; ?></button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- BOTONES ABAJO -->
+                            <div class="mt-4">
+                                <button type="button" class="btn btn-success btn-sm mr-2 mb-2">Información adicional</button>
+                                <button type="button" class="btn btn-success btn-sm mr-2 mb-2">Información bancaria</button>
+                            </div>
 
-                <button class="btn btn-success mr-2 mb-2">
-                    <i class="fas fa-utensils"></i> Apoyo de alimentación
-                </button>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
 
-                <button class="btn btn-success mr-2 mb-2">
-                    <i class="fas fa-phone"></i> Apoyo de datos
-                </button>
             </div>
-
-            <!-- TABLA SOSTENIMIENTO -->
-            <table id="tblSostenimiento" class="table tbl-GAiA table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Identificación</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Ficha</th>
-                        <th>Estado</th>
-                        <th>Última modificación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Arnulfo Salamandra</td>
-                        <td>arnulfo.salamandra@gmail.com</td>
-                        <td>3063989</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>06/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Juan Pérez</td>
-                        <td>juan@gmail.com</td>
-                        <td>3063990</td>
-                        <td class="text-center">
-                            <button class="btn btn-warning btn-sm">Pendiente</button>
-                        </td>
-                        <td>07/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>María López</td>
-                        <td>maria@gmail.com</td>
-                        <td>3063991</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>08/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>Carlos Ramírez</td>
-                        <td>carlos@gmail.com</td>
-                        <td>3063992</td>
-                        <td class="text-center"><button class="btn btn-success btn-sm">Aprobado</button></td>
-                        <td>09/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- TABLA TRANSPORTE -->
-            <table id="tblTransporte/" class="table tbl-GAiA table-bordered table-striped" style="display:none">
-                <thead>
-                    <tr>
-                        <th>Identificación</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Ficha</th>
-                        <th>Estado</th>
-                        <th>Última modificación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Arnulfo Salamandra</td>
-                        <td>arnulfo.salamandra@gmail.com</td>
-                        <td>3063989</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>06/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Juan Pérez</td>
-                        <td>juan@gmail.com</td>
-                        <td>3063990</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>07/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>Luisa Martínez</td>
-                        <td>luisa@gmail.com</td>
-                        <td>3063993</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>10/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>Andrés Torres</td>
-                        <td>andres@gmail.com</td>
-                        <td>3063994</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>11/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-
-
-            <!-- TABLA ALIMENTACIÓN -->
-            <table id="tblAlimentacion/" class="table tbl-GAiA table-bordered table-striped" style="display:none">
-                <thead>
-                    <tr>
-                        <th>Identificación</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Ficha</th>
-                        <th>Estado</th>
-                        <th>Última modificación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Arnulfo Salamandra</td>
-                        <td>arnulfo.salamandra@gmail.com</td>
-                        <td>3063989</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>06/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Juan Pérez</td>
-                        <td>juan@gmail.com</td>
-                        <td>3063990</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>07/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>Sofía Herrera</td>
-                        <td>sofia@gmail.com</td>
-                        <td>3063995</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>12/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>Diego Castro</td>
-                        <td>diego@gmail.com</td>
-                        <td>3063996</td>
-                        <td class="text-center">
-                            <button class="btn btn-warning btn-sm">Pendiente</button>
-                        </td>
-                        <td>13/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- TABLA DATOS -->
-            <table id="tblDatos/" class="table tbl-GAiA table-bordered table-striped" style="display:none">
-                <thead>
-                    <tr>
-                        <th>Identificación</th>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Ficha</th>
-                        <th>Estado</th>
-                        <th>Última modificación</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Arnulfo Salamandra</td>
-                        <td>arnulfo.salamandra@gmail.com</td>
-                        <td>3063989</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>06/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>2</td>
-                        <td>Juan Pérez</td>
-                        <td>juan@gmail.com</td>
-                        <td>3063990</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>07/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>3</td>
-                        <td>Valentina Rojas</td>
-                        <td>vale@gmail.com</td>
-                        <td>3063997</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>14/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>Julián Vega</td>
-                        <td>julian@gmail.com</td>
-                        <td>3063998</td>
-                        <td class="text-center">
-                            <button class="btn btn-success btn-sm">Aprobado</button>
-                        </td>
-                        <td>15/11/2025</td>
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-pdf"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-file-alt"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="far fa-eye"></i>
-                            </button>
-
-                            <button class="btn btn-sm btn-outline-info border-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-
-            <!-- BOTONES ABAJO -->
-            <div class="mt-3">
-                <button type="button" class="btn btn-success btn-sm mr-2 mb-2">Información adicional</button>
-
-                <button type="button" class="btn btn-success btn-sm mr-2 mb-2">Información bancaria</button>
-            </div>
-
         </div>
     </div>
 </section>
 <!-- /.content -->
+
+<!-- Estilos para las tabs oscuras -->
+<style>
+    .card-dark.card-tabs .nav-tabs .nav-link.active {
+        background-color: #2b3035 !important;
+        border-color: #6c757d #6c757d transparent !important;
+        color: #fff !important;
+    }
+    
+    .card-dark.card-tabs .nav-tabs .nav-link {
+        color: #adb5bd;
+        border-top: 3px solid transparent;
+    }
+
+    .card-dark.card-tabs .nav-tabs .nav-link:hover {
+        color: #fff;
+        border-top-color: #6c757d;
+        background-color: #343a40;
+    }
+</style>
+
+<!-- Inicialización dinámica de DataTables -->
+<script>
+$(document).ready(function () {
+    $(".tabla-beneficiarios").each(function() {
+        var table = $(this).DataTable({
+            responsive: true,
+            lengthChange: false,
+            autoWidth: false,
+            buttons: ["excel", "pdf"],
+            language: {
+                "sProcessing":     "Procesando...",
+                "sLengthMenu":     "Mostrar _MENU_ registros",
+                "sZeroRecords":    "No se encontraron resultados",
+                "sEmptyTable":     "Ningún dato disponible en esta tabla",
+                "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0",
+                "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+                "sInfoPostFix":    "",
+                "sSearch":         "Buscar:",
+                "sUrl":            "",
+                "sInfoThousands":  ",",
+                "sLoadingRecords": "Cargando...",
+                "oPaginate": {
+                    "sFirst":    "Primero",
+                    "sLast":     "Último",
+                    "sNext":     "Siguiente",
+                    "sPrevious": "Anterior"
+                },
+                "oAria": {
+                    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+                    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
+        });
+        
+        table.buttons().container().appendTo('#' + $(this).attr('id') + '_wrapper .col-md-6:eq(0)');
+    });
+});
+</script>

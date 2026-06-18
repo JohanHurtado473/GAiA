@@ -70,6 +70,22 @@ class AjaxInscripciones {
         $respuesta = ControladorInscripciones::ctrEliminarDocumento($idDoc, $rutaArchivo);
         echo json_encode(["status" => $respuesta]);
     }
+    // ==============================================
+    // SUBIR CERTIFICACIÓN BANCARIA AJAX
+    // ==============================================
+    public function ajaxSubirCertificacionBancaria() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        $idInscripcion = $_POST["id_inscripcion_banco"];
+        $banco = $_POST["entidad_bancaria"];
+        $cuenta = $_POST["numero_cuenta"];
+        $archivo = $_FILES["certificacion_pdf"];
+        
+        $respuesta = ControladorInscripciones::ctrSubirCertificacionBancaria($idInscripcion, $banco, $cuenta, $archivo);
+        echo json_encode($respuesta);
+    }
 }
 
 // ==============================================
@@ -98,6 +114,11 @@ if (isset($_POST["action"])) {
         $ajax->idDoc = $_POST["idDoc"];
         $ajax->rutaArchivo = $_POST["rutaArchivo"];
         $ajax->ajaxEliminarDocumento();
+    }
+
+    // Acción: Subir certificación bancaria
+    if ($_POST["action"] == "subirCertificacionBancaria") {
+        $ajax->ajaxSubirCertificacionBancaria();
     }
 
 }
