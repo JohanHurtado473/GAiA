@@ -187,3 +187,50 @@ MODALES DE APOYOS - ESTILO SECONDARY
     color: #ffffff;
     opacity: 1;
 }
+
+/* SweetAlert2 dark-mode visual adjustments */
+body.dark-mode .swal2-popup,
+body.dark-mode .swal2-toast {
+  background: #1f2937 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.dark-mode .swal2-title,
+body.dark-mode .swal2-html-container,
+body.dark-mode .swal2-content,
+body.dark-mode .swal2-validation-message {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .swal2-styled.swal2-confirm,
+body.dark-mode .swal2-styled.swal2-cancel,
+body.dark-mode .swal2-styled.swal2-deny {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode .swal2-styled.swal2-confirm {
+  background-color: #2563eb !important;
+}
+
+body.dark-mode .swal2-styled.swal2-cancel {
+  background-color: #4b5563 !important;
+}
+
+body.dark-mode .swal2-styled.swal2-deny {
+  background-color: #6b7280 !important;
+}
+
+body.dark-mode .swal2-input,
+body.dark-mode .swal2-textarea,
+body.dark-mode .swal2-select {
+  background: #111827 !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+body.dark-mode .swal2-icon {
+  color: #f8fafc !important;
+}

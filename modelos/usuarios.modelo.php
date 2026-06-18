@@ -12,10 +12,25 @@ class ModeloUsuarios
     // ************************************
     static public function mdlIngresarUsuario($documento)
     {
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto FROM usuarios u WHERE documento_id = :documento");
+        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.doc_identidad_maestro_url AS foto FROM usuarios u WHERE documento_id = :documento");
         $stmt->bindParam(":documento", $documento, PDO::PARAM_STR);
         $stmt->execute();
-        return $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            // Normalizar clave `ficha_id` según el nombre real de la columna en la tabla
+            if (!isset($row['ficha_id'])) {
+                if (isset($row['id_ficha'])) {
+                    $row['ficha_id'] = $row['id_ficha'];
+                } elseif (isset($row['fichas_id'])) {
+                    $row['ficha_id'] = $row['fichas_id'];
+                } else {
+                    $row['ficha_id'] = null;
+                }
+            }
+        }
+
+        return $row;
     }  //fin del metodo mdlIngresarUsuario
 
 
@@ -24,9 +39,63 @@ class ModeloUsuarios
     // ************************************    
     static public function mdlListarUsuarios()
     {
-        $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto, f.codigo FROM usuarios u LEFT JOIN fichas f ON f.id_ficha = u.fichas_id WHERE u.rol<>'Administrador';");
+        // Selección segura sin referenciar columnas de ficha que pueden no existir
+        $stmt = Conexion::conectar()->prepare("SELECT u.* FROM usuarios u WHERE u.rol<>'Administrador';");
         $stmt->execute();
-        return $stmt->fetchAll();
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (!$rows) {
+            return array();
+        }
+
+        // Normalizar clave `ficha_id` y preparar lista de fichas para obtener `codigo`
+        $fichaIds = array();
+        foreach ($rows as &$r) {
+            if (!isset($r['ficha_id'])) {
+                if (isset($r['id_ficha'])) {
+                    $r['ficha_id'] = $r['id_ficha'];
+                } elseif (isset($r['fichas_id'])) {
+                    $r['ficha_id'] = $r['fichas_id'];
+                } else {
+                    $r['ficha_id'] = null;
+                }
+            }
+
+            // normalizar foto
+            if (!isset($r['foto']) && isset($r['doc_identidad_maestro_url'])) {
+                $r['foto'] = $r['doc_identidad_maestro_url'];
+            }
+
+            if (!empty($r['ficha_id'])) {
+                $fichaIds[] = (int)$r['ficha_id'];
+            }
+        }
+
+        // Obtener códigos de fichas en una sola consulta si hay ids
+        $codigoMap = array();
+        if (!empty($fichaIds)) {
+            $uniqueIds = array_values(array_unique($fichaIds));
+            $in = implode(',', array_map('intval', $uniqueIds));
+            $stmt2 = Conexion::conectar()->prepare("SELECT id_ficha, codigo FROM fichas WHERE id_ficha IN ($in)");
+            $stmt2->execute();
+            $fichas = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($fichas as $f) {
+                $codigoMap[(int)$f['id_ficha']] = $f['codigo'];
+            }
+        }
+
+        // Adjuntar codigo a cada fila si existe
+        foreach ($rows as &$r) {
+            $r['codigo'] = null;
+            if (!empty($r['ficha_id'])) {
+                $id = (int)$r['ficha_id'];
+                if (isset($codigoMap[$id])) {
+                    $r['codigo'] = $codigoMap[$id];
+                }
+            }
+        }
+
+        return $rows;
     }
 
     // ************************************
@@ -44,7 +113,7 @@ class ModeloUsuarios
     // ************************************    
         static public function mdlAgregarUsuario($tabla, $datos)
         {
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, fichas_id, doc_identidad_maestro_url) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id, :foto)");
+        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla (tipo_documento, documento_id, nombres, apellidos, correo, fecha_nacimiento, rol, password, id_ficha, doc_identidad_maestro_url) VALUES (:tipoDocumento, :documentoId, :nombres, :apellidos, :correo, :fechaNacimiento, :rol, :password, :ficha_id, :foto)");
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
         $stmt->bindParam(":nombres", $datos["nombres"], PDO::PARAM_STR);
@@ -65,14 +134,32 @@ class ModeloUsuarios
     static public function mdlMostrarUsuarios($tabla, $item, $valor)
     {
         if ($tabla === "usuarios") {
-            $stmt = Conexion::conectar()->prepare("SELECT u.*, u.fichas_id AS ficha_id, u.doc_identidad_maestro_url AS foto FROM $tabla u WHERE $item = :valor");
+            $stmt = Conexion::conectar()->prepare("SELECT u.* FROM $tabla u WHERE $item = :valor");
         } else {
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :valor");
         }
         $stmt->bindParam(":valor", $valor, PDO::PARAM_STR);
         error_log("valor en el modelo:" . $tabla);
         $stmt->execute();
-        return $stmt->fetch();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($tabla === "usuarios" && $row) {
+            if (!isset($row['ficha_id'])) {
+                if (isset($row['id_ficha'])) {
+                    $row['ficha_id'] = $row['id_ficha'];
+                } elseif (isset($row['fichas_id'])) {
+                    $row['ficha_id'] = $row['fichas_id'];
+                } else {
+                    $row['ficha_id'] = null;
+                }
+            }
+
+            if (!isset($row['foto']) && isset($row['doc_identidad_maestro_url'])) {
+                $row['foto'] = $row['doc_identidad_maestro_url'];
+            }
+        }
+
+        return $row;
     }
 
     // ************************************
@@ -80,7 +167,7 @@ class ModeloUsuarios
     // ************************************    
         static public function mdlEditarUsuario($tabla, $datos)
         {
-        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, fichas_id = :ficha_id, doc_identidad_maestro_url = :foto WHERE id = :id");
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET tipo_documento = :tipoDocumento, documento_id = :documentoId, nombres = :nombres, apellidos = :apellidos, correo = :correo, fecha_nacimiento = :fechaNacimiento, rol = :rol, password = :password, id_ficha = :ficha_id, doc_identidad_maestro_url = :foto WHERE id = :id");
         
         $stmt->bindParam(":tipoDocumento", $datos["tipoDocumento"], PDO::PARAM_STR);
         $stmt->bindParam(":documentoId", $datos["documentoId"], PDO::PARAM_STR);
