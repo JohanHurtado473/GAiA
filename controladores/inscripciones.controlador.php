@@ -103,6 +103,15 @@ class ControladorInscripciones {
         if ($inscripcion) {
             $inscripcionId = $inscripcion["id"];
         } else {
+            // Validar que la convocatoria siga vigente antes de crear la postulación
+            $convocatoria = ControladorConvocatorias::ctrMostrarConvocatoria("id", $convocatoriaId);
+            if ($convocatoria && date("Y-m-d") > $convocatoria["fecha_fin"]) {
+                return array(
+                    "status" => "error",
+                    "message" => "La convocatoria ya no está disponible debido a que su fecha de vigencia ha expirado"
+                );
+            }
+
             // Crear inscripción inicial en estado PENDIENTE
             $datosInscripcion = array(
                 "usuario_id" => $usuarioId,
