@@ -23,8 +23,13 @@ class ModeloInscripciones {
     // ==============================================
     // MOSTRAR INSCRIPCION ESPECIFICA DE USUARIO Y CONVOCATORIA
     // ==============================================
-    static public function mdlMostrarInscripcionUsuario($tabla, $usuarioId, $convocatoriaId) {
-        $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE usuario_id = :usuario_id AND convocatoria_id = :convocatoria_id");
+    static public function mdlMostrarInscripcionUsuario($tabla, $usuarioId, $convocatoriaId, $forUpdate = false, $conexion = null) {
+        $conexion = $conexion ? $conexion : Conexion::conectar();
+        $sql = "SELECT * FROM $tabla WHERE usuario_id = :usuario_id AND convocatoria_id = :convocatoria_id";
+        if ($forUpdate) {
+            $sql .= " FOR UPDATE";
+        }
+        $stmt = $conexion->prepare($sql);
         $stmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
         $stmt->bindParam(":convocatoria_id", $convocatoriaId, PDO::PARAM_INT);
         $stmt->execute();
@@ -44,8 +49,8 @@ class ModeloInscripciones {
     // ==============================================
     // CREAR INSCRIPCION INICIAL (ESTADO PENDIENTE)
     // ==============================================
-    static public function mdlCrearInscripcion($tabla, $datos) {
-        $conexion = Conexion::conectar();
+    static public function mdlCrearInscripcion($tabla, $datos, $conexion = null) {
+        $conexion = $conexion ? $conexion : Conexion::conectar();
         $stmt = $conexion->prepare("INSERT INTO $tabla (usuario_id, convocatoria_id, ficha_id, puntaje_total, estado) 
                                     VALUES (:usuario_id, :convocatoria_id, :ficha_id, 0.00, 'PENDIENTE')");
         

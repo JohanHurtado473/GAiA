@@ -12,6 +12,39 @@ $(document).ready(function() {
 
     let activeConvocatoriaId = null;
 
+    function actualizarEstadoBotonEnvio(inscripcion) {
+        const $btnEnviar = $("#btn-enviar-postulacion-sim");
+        const $btnBorrador = $("#btn-guardar-borrador-sim");
+        const defaultHtml = `<i class="fas fa-rocket mr-1"></i> Enviar Postulación`;
+
+        if (!inscripcion) {
+            $btnEnviar.prop("disabled", false)
+                .removeClass("btn-secondary").addClass("btn-success")
+                .html(defaultHtml)
+                .attr("title", "Envía tu postulación cuando tengas todos los documentos cargados.");
+            $btnBorrador.prop("disabled", false);
+            return;
+        }
+
+        const estado = inscripcion.estado ? inscripcion.estado.toUpperCase() : "";
+        const permiteEnvio = estado === "DEVUELTA";
+
+        if (permiteEnvio) {
+            $btnEnviar.prop("disabled", false)
+                .removeClass("btn-secondary").addClass("btn-success")
+                .html(defaultHtml)
+                .attr("title", "Tu postulación fue devuelta y puedes reenviarla una vez ajustes los documentos.");
+            $btnBorrador.prop("disabled", false);
+            return;
+        }
+
+        $btnEnviar.prop("disabled", true)
+            .removeClass("btn-success").addClass("btn-secondary")
+            .html(`<i class="fas fa-check mr-1"></i> Postulación Realizada`)
+            .attr("title", "Ya te has postulado a esta convocatoria. Revisa el estado en el menú principal.");
+        $btnBorrador.prop("disabled", true);
+    }
+
     // --- ACCIÓN: CLIC EN "INICIAR POSTULACIÓN" O "CORREGIR POSTULACIÓN" (GRID CARDS) ---
     $(document).on("click", ".btn-iniciar-inscripcion", function() {
         const idConvocatoria = $(this).data("id-convocatoria");
@@ -52,6 +85,8 @@ $(document).ready(function() {
 
         // Limpiar contenedor de requisitos
         const $contenedor = $("#contenedor-requisitos-carga");
+        const $btnEnviar = $("#btn-enviar-postulacion-sim");
+        const $btnBorrador = $("#btn-guardar-borrador-sim");
         $contenedor.empty();
 
         // Mostrar spinner de carga
@@ -61,6 +96,12 @@ $(document).ready(function() {
                 <h5>Cargando requisitos del servidor...</h5>
             </div>
         `);
+
+        $btnEnviar.prop("disabled", true)
+            .removeClass("btn-success").addClass("btn-secondary")
+            .html('<i class="fas fa-spinner fa-spin mr-1"></i> Cargando...')
+            .attr("title", "Cargando estado de postulación...");
+        $btnBorrador.prop("disabled", true);
 
         // Realizar petición AJAX para traer requisitos y postulación existente
         const datos = new FormData();
@@ -81,6 +122,8 @@ $(document).ready(function() {
                 if (respuesta.status == "success") {
                     const baremo = respuesta.baremo;
                     const documentosCargados = respuesta.documentos;
+
+                    actualizarEstadoBotonEnvio(respuesta.inscripcion);
 
                     if (baremo.length === 0) {
                         $contenedor.html(`
@@ -174,10 +217,12 @@ $(document).ready(function() {
                     $("html, body").animate({ scrollTop: 0 }, "slow");
 
                 } else {
+                    actualizarEstadoBotonEnvio(null);
                     toastr.error("Error al recuperar los datos de la convocatoria.");
                 }
             },
             error: function() {
+                actualizarEstadoBotonEnvio(null);
                 toastr.error("No se pudo conectar con el servidor.");
             }
         });
@@ -437,6 +482,15 @@ $(document).ready(function() {
 
     // --- ACCIÓN: ENVIAR POSTULACIÓN COMPLETA (FINALIZAR) ---
     $("#btn-enviar-postulacion-sim").on("click", function() {
+        const $btn = $(this);
+        const defaultHtml = `<i class="fas fa-rocket mr-1"></i> Enviar Postulación`;
+
+        if ($btn.prop("disabled")) {
+            return;
+        }
+
+        $btn.prop("disabled", true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Procesando...');
+
         let obligatoriosFaltantes = 0;
 
         $("#contenedor-requisitos-carga .card-requisito").each(function() {
@@ -456,6 +510,7 @@ $(document).ready(function() {
                 background: '#343a40',
                 confirmButtonColor: '#dc3545'
             });
+            $btn.prop("disabled", false).html(defaultHtml);
             return;
         }
 
@@ -482,6 +537,8 @@ $(document).ready(function() {
                 }).then(() => {
                     window.location = "inscripciones";
                 });
+            } else {
+                $btn.prop("disabled", false).html(defaultHtml);
             }
         });
     });

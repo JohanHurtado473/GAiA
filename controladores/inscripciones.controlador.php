@@ -97,22 +97,62 @@ class ControladorInscripciones {
 
         // --- 4. PERSISTENCIA DE INSCRIPCIÓN ---
         
-        // Verificar si el aprendiz ya tiene una inscripción a esta convocatoria
-        $inscripcion = ModeloInscripciones::mdlMostrarInscripcionUsuario("inscripciones", $usuarioId, $convocatoriaId);
+        $conexion = Conexion::conectar();
+        $lockName = "inscripcion_{$usuarioId}_{$convocatoriaId}";
+        $lockAcquired = false;
 
-        if ($inscripcion) {
-            $inscripcionId = $inscripcion["id"];
-        } else {
-            // Crear inscripción inicial en estado PENDIENTE
-            $datosInscripcion = array(
-                "usuario_id" => $usuarioId,
-                "convocatoria_id" => $convocatoriaId,
-                "ficha_id" => $fichaId
-            );
-            $inscripcionId = ModeloInscripciones::mdlCrearInscripcion("inscripciones", $datosInscripcion);
-            
+        try {
+            $conexion->beginTransaction();
+
+            $stmtLock = $conexion->prepare("SELECT GET_LOCK(:lockName, 10) AS lock_acquired");
+            $stmtLock->bindParam(":lockName", $lockName, PDO::PARAM_STR);
+            $stmtLock->execute();
+            $lockAcquired = (bool) $stmtLock->fetchColumn();
+
+            if (!$lockAcquired) {
+                $conexion->rollBack();
+                return array("status" => "error", "message" => "No se pudo iniciar la postulación. Intente nuevamente.");
+            }
+
+            $inscripcion = ModeloInscripciones::mdlMostrarInscripcionUsuario("inscripciones", $usuarioId, $convocatoriaId, true, $conexion);
+
+            if ($inscripcion) {
+                $inscripcionId = $inscripcion["id"];
+            } else {
+                // Crear inscripción inicial en estado PENDIENTE
+                $datosInscripcion = array(
+                    "usuario_id" => $usuarioId,
+                    "convocatoria_id" => $convocatoriaId,
+                    "ficha_id" => $fichaId
+                );
+                $inscripcionId = ModeloInscripciones::mdlCrearInscripcion("inscripciones", $datosInscripcion, $conexion);
+
+                if (!$inscripcionId) {
+                    // Si ocurre un error por intento concurrente, intentar reconsultar la inscripción
+                    $conexion->rollBack();
+                    $inscripcion = ModeloInscripciones::mdlMostrarInscripcionUsuario("inscripciones", $usuarioId, $convocatoriaId, false, $conexion);
+                    if ($inscripcion) {
+                        $inscripcionId = $inscripcion["id"];
+                    }
+                }
+            }
+
             if (!$inscripcionId) {
+                $conexion->rollBack();
                 return array("status" => "error", "message" => "Error al registrar la postulación en la base de datos.");
+            }
+
+            $conexion->commit();
+        } catch (PDOException $e) {
+            if ($conexion->inTransaction()) {
+                $conexion->rollBack();
+            }
+            return array("status" => "error", "message" => "Error interno al procesar la postulación.");
+        } finally {
+            if ($lockAcquired) {
+                $stmtUnlock = $conexion->prepare("SELECT RELEASE_LOCK(:lockName)");
+                $stmtUnlock->bindParam(":lockName", $lockName, PDO::PARAM_STR);
+                $stmtUnlock->execute();
             }
         }
 
