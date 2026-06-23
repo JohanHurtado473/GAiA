@@ -81,6 +81,15 @@ $(document).ready(function() {
                 if (respuesta.status == "success") {
                     const baremo = respuesta.baremo;
                     const documentosCargados = respuesta.documentos;
+                    const fechaFin = respuesta.fecha_fin; // YYYY-MM-DD
+
+                    // Si la convocatoria ya está vencida, deshabilitar envío y mostrar mensaje
+                    if (fechaFin && new Date().toISOString().slice(0,10) > fechaFin) {
+                        $("#btn-enviar-postulacion-sim").prop("disabled", true);
+                        $("#badge-fecha-limite").after(`<div class="text-danger mt-2">La convocatoria ya no está disponible debido a que su fecha de vigencia ha expirado</div>`);
+                    } else {
+                        $("#btn-enviar-postulacion-sim").prop("disabled", false);
+                    }
 
                     if (baremo.length === 0) {
                         $contenedor.html(`

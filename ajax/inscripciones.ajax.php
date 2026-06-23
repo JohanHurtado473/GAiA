@@ -40,11 +40,16 @@ class AjaxInscripciones {
             }
         }
 
+        // Además enviar la fecha de fin de la convocatoria para validación en cliente
+        $convocatoria = ControladorConvocatorias::ctrMostrarConvocatoria("id", $this->idConvocatoria);
+        $fechaFin = $convocatoria ? $convocatoria["fecha_fin"] : null;
+
         echo json_encode([
             "status" => "success",
             "baremo" => $requisitosBaremo,
             "inscripcion" => $inscripcion,
-            "documentos" => $documentosCargados
+            "documentos" => $documentosCargados,
+            "fecha_fin" => $fechaFin
         ]);
     }
 
