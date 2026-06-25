@@ -459,29 +459,69 @@ $(document).ready(function() {
             return;
         }
 
-        Swal.fire({
-            title: '¿Confirmar envío de postulación?',
-            text: "Tu solicitud se enviará a revisión. Se bloqueará la edición y borrado de documentos mientras dure la evaluación.",
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#28a745',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Sí, enviar ahora',
-            cancelButtonText: 'Cancelar',
-            background: '#343a40'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Como los archivos ya se subieron en tiempo real y el registro en la BD de inscripciones ya se creó, 
-                // el envío simplemente confirma el estado. Redirigimos a la tabla actualizando estados.
+        const $btn = $(this);
+        $btn.prop("disabled", true);
+
+        const datosValidacion = {
+            action: "validarConvocatoriaVigente",
+            convocatoriaId: activeConvocatoriaId
+        };
+
+        $.ajax({
+            url: "ajax/inscripciones.ajax.php",
+            method: "POST",
+            data: datosValidacion,
+            dataType: "json",
+            success: function(respuesta) {
+                if (respuesta.status !== "success") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Convocatoria Vencida',
+                        text: respuesta.message,
+                        background: '#343a40',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    $btn.prop("disabled", false);
+                    return;
+                }
+
                 Swal.fire({
-                    icon: 'success',
-                    title: '¡Postulación Enviada!',
-                    text: 'Tu solicitud ha sido ingresada al flujo de evaluación del centro de formación.',
-                    background: '#343a40',
-                    confirmButtonColor: '#28a745'
-                }).then(() => {
-                    window.location = "inscripciones";
+                    title: '¿Confirmar envío de postulación?',
+                    text: "Tu solicitud se enviará a revisión. Se bloqueará la edición y borrado de documentos mientras dure la evaluación.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Sí, enviar ahora',
+                    cancelButtonText: 'Cancelar',
+                    background: '#343a40'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Como los archivos ya se subieron en tiempo real y el registro en la BD de inscripciones ya se creó, 
+                        // el envío simplemente confirma el estado. Redirigimos a la tabla actualizando estados.
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Postulación Enviada!',
+                            text: 'Tu solicitud ha sido ingresada al flujo de evaluación del centro de formación.',
+                            background: '#343a40',
+                            confirmButtonColor: '#28a745'
+                        }).then(() => {
+                            window.location = "inscripciones";
+                        });
+                    } else {
+                        $btn.prop("disabled", false);
+                    }
                 });
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de Red',
+                    text: 'Fallo al comunicarse con el servidor.',
+                    background: '#343a40',
+                    confirmButtonColor: '#dc3545'
+                });
+                $btn.prop("disabled", false);
             }
         });
     });

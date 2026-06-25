@@ -27,6 +27,23 @@ class ControladorInscripciones {
     // ==============================================
     // CARGAR UN ARCHIVO E INTEGRAR EN BASE DE DATOS
     // ==============================================
+    static public function ctrValidarConvocatoriaVigente($convocatoriaId) {
+        $convocatoria = ControladorConvocatorias::ctrMostrarConvocatoria("id", $convocatoriaId);
+
+        if (!$convocatoria) {
+            return array("status" => "error", "message" => "Convocatoria no encontrada.");
+        }
+
+        $hoy = new DateTime("today");
+        $fechaFin = new DateTime($convocatoria["fecha_fin"]);
+
+        if ($hoy > $fechaFin || strtoupper($convocatoria["estado_en_convocatoria"]) !== "ABIERTA") {
+            return array("status" => "error", "message" => "La convocatoria ha vencido o ya no está abierta. No es posible procesar la postulación.");
+        }
+
+        return array("status" => "success", "message" => "La convocatoria sigue vigente.");
+    }
+
     static public function ctrSubirDocumento($file, $convocatoriaId, $nombreDoc) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -34,6 +51,11 @@ class ControladorInscripciones {
 
         if (!isset($_SESSION["id"])) {
             return array("status" => "error", "message" => "Sesión de usuario no válida.");
+        }
+
+        $validacionConvocatoria = self::ctrValidarConvocatoriaVigente($convocatoriaId);
+        if ($validacionConvocatoria["status"] !== "success") {
+            return $validacionConvocatoria;
         }
 
         $usuarioId = $_SESSION["id"];

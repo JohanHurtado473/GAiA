@@ -86,6 +86,15 @@ class AjaxInscripciones {
         $respuesta = ControladorInscripciones::ctrSubirCertificacionBancaria($idInscripcion, $banco, $cuenta, $archivo);
         echo json_encode($respuesta);
     }
+
+    // ==============================================
+    // VALIDAR QUE LA CONVOCATORIA SIGA VIGENTE ANTES DEL ENVÍO FINAL
+    // ==============================================
+    public function ajaxValidarConvocatoriaVigente() {
+        $convocatoriaId = $this->convocatoriaId;
+        $respuesta = ControladorInscripciones::ctrValidarConvocatoriaVigente($convocatoriaId);
+        echo json_encode($respuesta);
+    }
 }
 
 // ==============================================
@@ -119,6 +128,12 @@ if (isset($_POST["action"])) {
     // Acción: Subir certificación bancaria
     if ($_POST["action"] == "subirCertificacionBancaria") {
         $ajax->ajaxSubirCertificacionBancaria();
+    }
+
+    // Acción: Validar que la convocatoria siga vigente antes del envío final
+    if ($_POST["action"] == "validarConvocatoriaVigente" && isset($_POST["convocatoriaId"])) {
+        $ajax->convocatoriaId = $_POST["convocatoriaId"];
+        $ajax->ajaxValidarConvocatoriaVigente();
     }
 
 }
