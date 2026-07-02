@@ -10,6 +10,14 @@ class ControladorApoyos
         return $respuesta;
     }
 
+    // MOSTRAR APOYOS ACTIVOS (apoyos cuyo estado es "activo")
+    static public function ctrMostrarApoyosActivos($item, $valor)
+    {
+        $tabla = "apoyos";
+        $respuesta = ModeloApoyos::mdlMostrarApoyosActivos($tabla, $item, $valor);
+        return $respuesta;
+    }
+
     // ACTUALIZAR APOYO DUAL U OTROS CAMPOS INDIVIDUALES
     static public function ctrActualizarApoyo($item1, $valor1, $item2, $valor2)
     {
@@ -31,9 +39,13 @@ class ControladorApoyos
                 // Manejo de booleano para apoyo dual
                 $apoyo_dual = isset($_POST["nuevoApoyoDual"]) ? $_POST["nuevoApoyoDual"] : 0;
 
+                // Manejo de booleano para estado del apoyo
+                $estado_apoyo = isset($_POST["nuevoEstadoApoyo"]) ? $_POST["nuevoEstadoApoyo"] : 1;
+
                 $datos = array(
                     "descripcion_apoyo" => $_POST["nuevaDescripcionApoyo"],
                     "apoyo_dual" => $apoyo_dual,
+                    "estado_apoyo" => $estado_apoyo,
                     "informacion_apoyo" => $_POST["nuevaInformacionApoyo"], // Textarea no se restringe con regex estricto por la puntuación, confiamos en PDO para inyección
                     "apoyo_icono" => $_POST["nuevoApoyoIcono"]
                 );
@@ -85,11 +97,13 @@ class ControladorApoyos
 
                 $tabla = "apoyos";
                 $apoyo_dual = isset($_POST["editarApoyoDual"]) ? $_POST["editarApoyoDual"] : 0;
+                $estado_apoyo = isset($_POST["editarEstadoApoyo"]) ? $_POST["editarEstadoApoyo"] : 1;
 
                 $datos = array(
                     "id_apoyo" => $_POST["idApoyo"],
                     "descripcion_apoyo" => $_POST["editarDescripcionApoyo"],
                     "apoyo_dual" => $apoyo_dual,
+                    "estado_apoyo" => $estado_apoyo,
                     "informacion_apoyo" => $_POST["editarInformacionApoyo"],
                     "apoyo_icono" => $_POST["editarApoyoIcono"]
                 );
