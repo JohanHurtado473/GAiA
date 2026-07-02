@@ -1,9 +1,9 @@
-$(document).ready(function() {
+$(document).ready(function () {
 
     // =======================================================
     // APROBAR DOCUMENTO BANCARIO (FINANCIERA)
     // =======================================================
-    $(document).on("click", ".btn-aprobar-banco", function() {
+    $(document).on("click", ".btn-aprobar-banco", function () {
         const idInscripcion = $(this).data("id-inscripcion");
 
         Swal.fire({
@@ -52,7 +52,7 @@ $(document).ready(function() {
                     contentType: false,
                     processData: false,
                     dataType: "json",
-                    success: function(respuesta) {
+                    success: function (respuesta) {
                         if (respuesta.status === "ok") {
                             Swal.fire({
                                 icon: 'success',
@@ -64,7 +64,7 @@ $(document).ready(function() {
                                 window.location = "financiera";
                             });
                         } else {
-                            Swal.fire({icon: 'error', title: 'Error', text: 'No se pudo aprobar la asignación.', background: '#343a40'});
+                            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo aprobar la asignación.', background: '#343a40' });
                         }
                     }
                 });
@@ -75,7 +75,7 @@ $(document).ready(function() {
     // =======================================================
     // RECHAZAR DOCUMENTO BANCARIO (FINANCIERA)
     // =======================================================
-    $(document).on("click", ".btn-rechazar-banco", function() {
+    $(document).on("click", ".btn-rechazar-banco", function () {
         const idInscripcion = $(this).data("id-inscripcion");
 
         Swal.fire({
@@ -111,7 +111,7 @@ $(document).ready(function() {
                     contentType: false,
                     processData: false,
                     dataType: "json",
-                    success: function(respuesta) {
+                    success: function (respuesta) {
                         if (respuesta.status === "ok") {
                             Swal.fire({
                                 icon: 'success',
@@ -123,7 +123,7 @@ $(document).ready(function() {
                                 window.location = "financiera";
                             });
                         } else {
-                            Swal.fire({icon: 'error', title: 'Error', text: 'No se pudo rechazar el documento.', background: '#343a40'});
+                            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo rechazar el documento.', background: '#343a40' });
                         }
                     }
                 });
@@ -134,7 +134,7 @@ $(document).ready(function() {
     // =======================================================
     // DESCARGAR REPORTE PDF DE APRENDIZ (FINANCIERA)
     // =======================================================
-    $(document).on("click", ".btnDescargarPdf", function() {
+    $(document).on("click", ".btnDescargarPdf", function () {
         const datos = $(this).data();
 
         const docDefinition = {
@@ -249,7 +249,7 @@ $(document).ready(function() {
     // =======================================================
     // MOSTRAR DETALLE FORMATO DE TERCEROS EN MODAL
     // =======================================================
-    $(document).on("click", ".btnFormatoTerceros", function() {
+    $(document).on("click", ".btnFormatoTerceros", function () {
         let idInscripcion = $(this).attr("data-idInscripcion");
         let datos = new FormData();
         datos.append("idInscripcion", idInscripcion);
@@ -262,7 +262,7 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             dataType: "json",
-            success: function(respuesta) {
+            success: function (respuesta) {
                 $("#terNombres").val(respuesta["nombres"] || "");
                 $("#terApellidos").val(respuesta["apellidos"] || "");
                 $("#terTipoDocumento").val(respuesta["tipo_documento"] || "");
@@ -285,7 +285,7 @@ $(document).ready(function() {
     // =======================================================
     // DESCARGAR EXCEL DE FORMATO DE TERCEROS
     // =======================================================
-    $(document).on("click", "#btnDescargarExcelTercero", function() {
+    $(document).on("click", "#btnDescargarExcelTercero", function () {
         let nombres = $("#terNombres").val() || "";
         let apellidos = $("#terApellidos").val() || "";
         let tipoDocumento = $("#terTipoDocumento").val() || "";
@@ -394,7 +394,7 @@ $(document).ready(function() {
     // =======================================================
     // MOSTRAR VALORES A COMPROMETER EN MODAL
     // =======================================================
-    $(document).on("click", ".btnValoresComprometer", function() {
+    $(document).on("click", ".btnValoresComprometer", function () {
         let idInscripcion = $(this).attr("data-idInscripcion");
         let datos = new FormData();
         datos.append("idInscripcion", idInscripcion);
@@ -407,7 +407,7 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             dataType: "json",
-            success: function(respuesta) {
+            success: function (respuesta) {
                 $("#compNumeroDocumento").val(respuesta["identificacion"] || "");
                 $("#compNombreAprendiz").val(respuesta["aprendiz"] || "");
                 $("#compTiempo").val(respuesta["meses_beneficio"] ? respuesta["meses_beneficio"] + " meses" : "");
@@ -421,9 +421,136 @@ $(document).ready(function() {
     });
 
     // =======================================================
+    // MOSTRAR RELEVAR BENEFICIARIO EN MODAL
+    // =======================================================
+    $(document).on("click", ".btnRelevarBeneficiario", function () {
+        let idInscripcion = $(this).attr("data-idInscripcion");
+        let datos = new FormData();
+        datos.append("idInscripcion", idInscripcion);
+
+        $.ajax({
+            url: "ajax/financiera.ajax.php",
+            method: "POST",
+            data: datos,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function (respuesta) {
+                $("#relevarNombreActual").val(respuesta["aprendiz"] || "");
+                $("#relevarDocumentoActual").val(respuesta["identificacion"] || "");
+                $("#relevarFichaActual").val(respuesta["codigo_ficha"] || "");
+                $("#relevarMotivo").val("");
+
+                // Guardar los IDs en los inputs ocultos
+                $("#relevarIdInscripcionSaliente").val(idInscripcion);
+                $("#relevarIdAsignacionSaliente").val(respuesta["asignacion_id"] || "");
+                $("#relevarIdInscripcionEntrante").val("");
+
+                // Guardar idInscripcion en el botón de información del saliente
+                $("#btnInfoSaliente").attr("data-idInscripcion", idInscripcion);
+
+                // Guardar convocatoria actual en el input entrante
+                $("#relevarDocumentoEntrante").attr("data-idConvocatoria", respuesta["nro_convocatoria"] || "");
+                $("#relevarDocumentoEntrante").val("");
+                $("#relevarNombreEntrante").val("");
+                $("#relevarFichaEntrante").val("");
+
+                let nroConvocatoria = respuesta["nro_convocatoria"];
+                
+                // Cargar los 5 seleccionados de la misma convocatoria
+                let datosSeleccionados = new FormData();
+                datosSeleccionados.append("action", "obtenerSeleccionados");
+                datosSeleccionados.append("id_convocatoria", nroConvocatoria);
+
+                $.ajax({
+                    url: "ajax/financiera.ajax.php",
+                    method: "POST",
+                    data: datosSeleccionados,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: "json",
+                    success: function (seleccionados) {
+                        let html = "";
+                        if (seleccionados && seleccionados.length > 0) {
+                            seleccionados.forEach(function (sel) {
+                                html += `<tr>
+                                    <td class="text-center font-weight-bold">${sel.identificacion}</td>
+                                    <td>${sel.aprendiz}</td>
+                                    <td>${sel.codigo_ficha} - ${sel.programa_formacion}</td>
+                                    <td>${sel.convocatoria_nombre}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-xs btn-outline-info mr-1 btnVerContactoRelevo" data-idInscripcion="${sel.inscripcion_id}" title="Información de Contacto">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                         <button type="button" class="btn btn-xs btn-success btnSeleccionarEntrante"
+                                             data-idInscripcion="${sel.inscripcion_id}"
+                                             data-documento="${sel.identificacion}"
+                                             data-nombre="${sel.aprendiz}"
+                                             data-ficha="${sel.codigo_ficha} - ${sel.programa_formacion}"
+                                             title="Seleccionar Aprendiz">
+                                             <i class="fas fa-check"></i>
+                                         </button>
+                                    </td>
+                                </tr>`;
+                            });
+                        } else {
+                            html = `<tr>
+                                <td colspan="5" class="text-center text-muted font-italic">No hay aprendices seleccionados disponibles para relevo en esta convocatoria.</td>
+                            </tr>`;
+                        }
+                        $("#listaRelevoSeleccionados").html(html);
+                    }
+                });
+            }
+        });
+    });
+
+    // =======================================================
+    // BUSCAR APRENDIZ ENTRANTE SELECCIONADO POR DOCUMENTO
+    // =======================================================
+    $(document).on("keyup change", "#relevarDocumentoEntrante", function () {
+        let documento = $(this).val();
+        let idConvocatoria = $(this).attr("data-idConvocatoria");
+
+        if (documento.trim() === "") {
+            $("#relevarNombreEntrante").val("");
+            $("#relevarFichaEntrante").val("");
+            return;
+        }
+
+        let datos = new FormData();
+        datos.append("action", "buscarEntrantePorDocumento");
+        datos.append("documento", documento);
+        datos.append("id_convocatoria", idConvocatoria);
+
+        $.ajax({
+            url: "ajax/financiera.ajax.php",
+            method: "POST",
+            data: datos,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function (respuesta) {
+                if (respuesta) {
+                    $("#relevarNombreEntrante").val(respuesta["aprendiz"] || "");
+                    $("#relevarFichaEntrante").val((respuesta["codigo_ficha"] || "") + " - " + (respuesta["programa_formacion"] || ""));
+                    $("#relevarIdInscripcionEntrante").val(respuesta["inscripcion_id"] || "");
+                } else {
+                    $("#relevarNombreEntrante").val("");
+                    $("#relevarFichaEntrante").val("");
+                    $("#relevarIdInscripcionEntrante").val("");
+                }
+            }
+        });
+    });
+
+    // =======================================================
     // DESCARGAR EXCEL DE VALORES A COMPROMETER
     // =======================================================
-    $(document).on("click", "#btnDescargarExcelValores", function() {
+    $(document).on("click", "#btnDescargarExcelValores", function () {
         let numeroDocumento = $("#compNumeroDocumento").val() || "";
         let nombreAprendiz = $("#compNombreAprendiz").val() || "";
         let valorRp = $("#compValorRp").val() || "";
@@ -492,5 +619,179 @@ $(document).ready(function() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    });
+
+    // =======================================================
+    // SELECCIONAR APRENDIZ ENTRANTE DESDE EL LISTADO
+    // =======================================================
+    $(document).on("click", ".btnSeleccionarEntrante", function () {
+        let idInscripcion = $(this).attr("data-idInscripcion");
+        let documento = $(this).attr("data-documento");
+        let nombre = $(this).attr("data-nombre");
+        let ficha = $(this).attr("data-ficha");
+
+        $("#relevarIdInscripcionEntrante").val(idInscripcion);
+        $("#relevarDocumentoEntrante").val(documento);
+        $("#relevarNombreEntrante").val(nombre);
+        $("#relevarFichaEntrante").val(ficha);
+    });
+
+    // =======================================================
+    // VER DATOS DE CONTACTO DE APRENDIZ EN SWAL
+    // =======================================================
+    $(document).on("click", ".btnVerContactoRelevo", function () {
+        let idInscripcion = $(this).attr("data-idInscripcion");
+
+        if (!idInscripcion) {
+            Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: "No se encontró el ID de inscripción de este aprendiz.",
+                background: "#343a40",
+                confirmButtonColor: "#17a2b8"
+            });
+            return;
+        }
+
+        let datos = new FormData();
+        datos.append("action", "obtenerContactoAprendiz");
+        datos.append("id_inscripcion", idInscripcion);
+
+        $.ajax({
+            url: "ajax/financiera.ajax.php",
+            method: "POST",
+            data: datos,
+            cache: false,
+            contentType: false,
+            processData: false,
+            dataType: "json",
+            success: function (respuesta) {
+                if (respuesta) {
+                    let telefono = respuesta["telefono"] || '<span class="text-warning">No registrado</span>';
+                    let direccion = respuesta["direccion"] || '<span class="text-warning">No registrado</span>';
+                    let departamento = respuesta["departamento"] || '<span class="text-warning">No registrado</span>';
+                    let ciudad = respuesta["ciudad"] || '<span class="text-warning">No registrado</span>';
+
+                    Swal.fire({
+                        title: `<h5 class="text-success font-weight-bold mb-0"><i class="fas fa-address-book mr-2"></i>Datos de Contacto</h5>`,
+                        html: `
+                            <div class="text-left text-white" style="font-size: 0.95rem;">
+                                <p class="border-bottom border-secondary pb-2"><strong>Aprendiz:</strong> ${respuesta["aprendiz"]}</p>
+                                <p class="mb-2"><i class="fas fa-phone text-success mr-2"></i><strong>Teléfono:</strong> ${telefono}</p>
+                                <p class="mb-2"><i class="fas fa-map-marker-alt text-success mr-2"></i><strong>Dirección:</strong> ${direccion}</p>
+                                <p class="mb-2"><i class="fas fa-city text-success mr-2"></i><strong>Ciudad:</strong> ${ciudad}</p>
+                                <p class="mb-0"><i class="fas fa-map text-success mr-2"></i><strong>Departamento:</strong> ${departamento}</p>
+                            </div>
+                        `,
+                        background: "#343a40",
+                        confirmButtonText: "Entendido",
+                        confirmButtonColor: "#17a2b8"
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "No se pudieron obtener los datos de contacto.",
+                        background: "#343a40",
+                        confirmButtonColor: "#dc3545"
+                    });
+                }
+            }
+        });
+    });
+
+    // =======================================================
+    // PROCESAR RELEVO SUBMIT AJAX
+    // =======================================================
+    $(document).on("click", "#btnGuardarRelevo", function () {
+        let idSaliente = $("#relevarIdInscripcionSaliente").val();
+        let idAsignacionSaliente = $("#relevarIdAsignacionSaliente").val();
+        let idEntrante = $("#relevarIdInscripcionEntrante").val();
+        let motivo = $("#relevarMotivo").val();
+
+        if (!idSaliente || !idAsignacionSaliente) {
+            Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: "No se cargó correctamente el aprendiz saliente. Cierre y vuelva a abrir la modal.",
+                background: "#343a40",
+                confirmButtonColor: "#17a2b8"
+            });
+            return;
+        }
+
+        if (!idEntrante) {
+            Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: "Debe buscar o seleccionar un aprendiz entrante válido de la lista.",
+                background: "#343a40",
+                confirmButtonColor: "#17a2b8"
+            });
+            return;
+        }
+
+        if (motivo.trim() === "") {
+            Swal.fire({
+                icon: "warning",
+                title: "Atención",
+                text: "Debe ingresar el motivo del relevo.",
+                background: "#343a40",
+                confirmButtonColor: "#17a2b8"
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: "¿Está seguro?",
+            text: "Se registrará el relevo. El aprendiz saliente será retirado y el entrante pasará a ser beneficiado activo.",
+            icon: "question",
+            background: "#343a40",
+            showCancelButton: true,
+            confirmButtonColor: "#28a745",
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Sí, procesar relevo",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let datos = new FormData();
+                datos.append("action", "procesarRelevo");
+                datos.append("id_inscripcion_saliente", idSaliente);
+                datos.append("id_inscripcion_entrante", idEntrante);
+                datos.append("id_asignacion_saliente", idAsignacionSaliente);
+                datos.append("motivo", motivo);
+
+                $.ajax({
+                    url: "ajax/financiera.ajax.php",
+                    method: "POST",
+                    data: datos,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    dataType: "json",
+                    success: function (respuesta) {
+                        if (respuesta.status === "ok") {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Relevo Procesado",
+                                text: "El relevo se ha registrado exitosamente.",
+                                background: "#343a40",
+                                confirmButtonColor: "#28a745"
+                            }).then(() => {
+                                window.location = "financiera";
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "No se pudo procesar el relevo en el sistema.",
+                                background: "#343a40",
+                                confirmButtonColor: "#dc3545"
+                            });
+                        }
+                    }
+                });
+            }
+        });
     });
 });

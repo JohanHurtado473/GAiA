@@ -60,4 +60,40 @@ class ControladorFinanciera
         return $respuesta;
     }
 
+    /*=============================================
+    MOSTRAR 5 APRENDICES SELECCIONADOS POR CONVOCATORIA (PARA RELEVO)
+    =============================================*/
+    static public function ctrMostrarSeleccionadosRelevo($idConvocatoria)
+    {
+        $respuesta = ModeloFinanciera::mdlMostrarSeleccionadosRelevo($idConvocatoria);
+        return $respuesta;
+    }
+
+    /*=============================================
+    BUSCAR APRENDIZ ENTRANTE SELECCIONADO POR DOCUMENTO Y CONVOCATORIA
+    =============================================*/
+    static public function ctrBuscarEntrantePorDocumento($documento, $idConvocatoria)
+    {
+        $respuesta = ModeloFinanciera::mdlBuscarEntrantePorDocumento($documento, $idConvocatoria);
+        return $respuesta;
+    }
+
+    /*=============================================
+    OBTENER DATOS DE CONTACTO DE UN APRENDIZ POR ID DE INSCRIPCION
+    =============================================*/
+    static public function ctrObtenerContactoAprendiz($idInscripcion)
+    {
+        $respuesta = ModeloFinanciera::mdlObtenerContactoAprendiz($idInscripcion);
+        return $respuesta;
+    }
+
+    /*=============================================
+    PROCESAR RELEVO DE APRENDIZ
+    =============================================*/
+    static public function ctrProcesarRelevo($idSaliente, $idEntrante, $idAsignacionSaliente, $motivo, $idGestor)
+    {
+        $respuesta = ModeloFinanciera::mdlProcesarRelevo($idSaliente, $idEntrante, $idAsignacionSaliente, $motivo, $idGestor);
+        return $respuesta;
+    }
+
 }

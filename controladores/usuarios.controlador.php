@@ -1,16 +1,18 @@
 <?php
 
-class ControladorUsuarios{
+class ControladorUsuarios
+{
 
     // ************************************
     // LOGIN DE USUARIO 
     // ************************************
-    public function ctrIngresarUsuario(){
-        if (isset($_POST["ingDocumento"])){
+    public function ctrIngresarUsuario()
+    {
+        if (isset($_POST["ingDocumento"])) {
             if (
                 preg_match('/^[0-9]+$/', $_POST["ingDocumento"]) &&
                 preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])
-            ){
+            ) {
                 $documento = $_POST["ingDocumento"];
                 $respuesta = ModeloUsuarios::mdlIngresarUsuario($documento);
 
@@ -18,12 +20,12 @@ class ControladorUsuarios{
                 // var_dump($tempo);
                 // exit;
 
-                $passEncriptado=crypt($_POST["ingPassword"],'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
+                $passEncriptado = crypt($_POST["ingPassword"], '$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
 
-                if (is_array($respuesta)){
+                if (is_array($respuesta)) {
                     //preguntar si el usuario esta activo
-                    if ($respuesta["estado"]== "activo"){
-                        if ($respuesta["password"] == $passEncriptado && $respuesta["documento_id"]== $documento){
+                    if ($respuesta["estado"] == "activo") {
+                        if ($respuesta["password"] == $passEncriptado && $respuesta["documento_id"] == $documento) {
                             $_SESSION["iniciarSesion"] = "ok";
                             $_SESSION["id"] = $respuesta["id"];
                             $_SESSION["documento"] = $respuesta["documento_id"];
@@ -33,15 +35,15 @@ class ControladorUsuarios{
                             $_SESSION["ficha_id"] = $respuesta["ficha_id"];
                             $_SESSION["foto"] = $respuesta["foto"];
                             echo "<script>window.location = 'identificacion';</script>";
-                        } else{
-                        // var_dump($respuesta);
-                        echo  "<br><div class='alert alert-danger'>Usuario o contraseña incorrecto</div>";
-                        return;
-                        }   
+                        } else {
+                            // var_dump($respuesta);
+                            echo  "<br><div class='alert alert-danger'>Usuario o contraseña incorrecto</div>";
+                            return;
+                        }
                     } else {
                         echo  "<br><div class='alert alert-warning'>El usuario esta inactivo</div>";
                         return;
-                    }                   
+                    }
                 } else {
                     // El usuario no existe en la base de datos
                     echo "<script>
@@ -59,56 +61,57 @@ class ControladorUsuarios{
                     </script>";
                     return;
                 }
-
-            }    
-            
+            }
         }
     } //fin del metodo de ingresar usuario
 
-    
-     // ************************************
+
+    // ************************************
     // LISA DE DE USUARIOS EN LA VENTANA PRINCIPAL
     // ************************************   
-    static public function ctrListarUsuarios(){
-        $respuesta= ModeloUsuarios::mdlListarUsuarios();
+    static public function ctrListarUsuarios()
+    {
+        $respuesta = ModeloUsuarios::mdlListarUsuarios();
         return $respuesta;
     } //fin del metodo ctrListarUsuarios
 
     // ************************************
     // LISTA DE FICHAS
     // ************************************   
-    static public function ctrListarFichas(){
-        $respuesta= ModeloUsuarios::mdlListarFichas();
+    static public function ctrListarFichas()
+    {
+        $respuesta = ModeloUsuarios::mdlListarFichas();
         return $respuesta;
     } //fin del metodo ctrListarFichas
 
     // ************************************
     // AGREGAR USUARIO A LA BD
     // ************************************
-    public function ctrAgregarUsuario(){
+    public function ctrAgregarUsuario()
+    {
 
-        
-        if (isset($_POST["nuevoTipoDocumento"])  && 
-            isset($_POST["nuevoDocumento"])  && 
-            isset($_POST["nuevoNombre"])  && 
-            isset($_POST["nuevoApellido"])  && 
-            isset($_POST["nuevoCorreo"])  && 
-            isset($_POST["nuevoFechaNacimiento"])  && 
-            isset($_POST["nuevoRol"]))
 
-            {
-                // echo "entrando a agregar usuario";
-                // exit;
-                if (
+        if (
+            isset($_POST["nuevoTipoDocumento"])  &&
+            isset($_POST["nuevoDocumento"])  &&
+            isset($_POST["nuevoNombre"])  &&
+            isset($_POST["nuevoApellido"])  &&
+            isset($_POST["nuevoCorreo"])  &&
+            isset($_POST["nuevoFechaNacimiento"])  &&
+            isset($_POST["nuevoRol"])
+        ) {
+            // echo "entrando a agregar usuario";
+            // exit;
+            if (
                 preg_match('/^[0-9]+$/', $_POST["nuevoDocumento"]) &&
                 preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚÑñ ]+$/', $_POST["nuevoNombre"]) &&
                 preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚÑñ ]+$/', $_POST["nuevoApellido"])
-              ) {
+            ) {
 
-                $tabla="usuarios";
+                $tabla = "usuarios";
                 // $passEncriptado=$_POST["nuevoDocumento"];
 
-                $passEncriptado=crypt($_POST["nuevoDocumento"],'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
+                $passEncriptado = crypt($_POST["nuevoDocumento"], '$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
 
                 $fichaId = null;
                 if ($_POST["nuevoRol"] == "Aprendiz" && isset($_POST["nuevaFicha"])) {
@@ -121,16 +124,16 @@ class ControladorUsuarios{
                 $ruta = self::procesarSubidaFoto($_FILES["nuevaFoto"], $_POST["nuevoDocumento"]);
 
                 $datos = array(
-                  "tipoDocumento" => $_POST["nuevoTipoDocumento"],
-                  "documentoId" => $_POST["nuevoDocumento"],
-                  "nombres" => $_POST["nuevoNombre"],
-                  "apellidos" => $_POST["nuevoApellido"],
-                  "correo" => $_POST["nuevoCorreo"],
-                  "fechaNacimiento" => $_POST["nuevoFechaNacimiento"],
-                  "rol" => $_POST["nuevoRol"],
-                  "password"=> $passEncriptado,
-                  "ficha_id" => $fichaId,
-                  "foto" => $ruta
+                    "tipoDocumento" => $_POST["nuevoTipoDocumento"],
+                    "documentoId" => $_POST["nuevoDocumento"],
+                    "nombres" => $_POST["nuevoNombre"],
+                    "apellidos" => $_POST["nuevoApellido"],
+                    "correo" => $_POST["nuevoCorreo"],
+                    "fechaNacimiento" => $_POST["nuevoFechaNacimiento"],
+                    "rol" => $_POST["nuevoRol"],
+                    "password" => $passEncriptado,
+                    "ficha_id" => $fichaId,
+                    "foto" => $ruta
                 );
                 $contacto = array(
                     "direccion" => isset($_POST["nuevaDireccion"]) ? $_POST["nuevaDireccion"] : "",
@@ -139,9 +142,9 @@ class ControladorUsuarios{
                     "codigo_ciu" => isset($_POST["nuevaCiudad"]) ? $_POST["nuevaCiudad"] : ""
                 );
 
-                $respuesta= ModeloUsuarios::mdlAgregarUsuario($tabla, $datos, $contacto);
+                $respuesta = ModeloUsuarios::mdlAgregarUsuario($tabla, $datos, $contacto);
 
-                if($respuesta == "ok"){
+                if ($respuesta == "ok") {
 
                     echo "<script>
                         Swal.fire({
@@ -158,7 +161,7 @@ class ControladorUsuarios{
                         
                     </script>";
                     // echo "<br><div class='alert alert-success'>El usuario ha sido registrado correctamente</div>";
-                }else if($respuesta == "duplicate"){
+                } else if ($respuesta == "duplicate") {
                     echo "<script>
                         Swal.fire({
                             icon: 'error',
@@ -168,39 +171,37 @@ class ControladorUsuarios{
                             confirmButtonText: 'Aceptar'
                         });
                     </script>";
-                }else{
+                } else {
                     echo "<br><div class='alert alert-danger'>Error al agregar el usuario</div>";
                 }
-
-        
-
-
-              }
+            }
         }  // fin del isset
     }
 
     // ************************************
     // AGREGAR APRENDIZ DESDE EL LOGIN
     // ************************************
-    public function ctrRegistroAprendiz(){
-        
-        if (isset($_POST["nuevoTipoDocumento"])  && 
-            isset($_POST["nuevoDocumento"])  && 
-            isset($_POST["nuevoNombre"])  && 
-            isset($_POST["nuevoApellido"])  && 
-            isset($_POST["nuevoCorreo"])  && 
-            isset($_POST["nuevoFechaNacimiento"])  && 
-            isset($_POST["nuevoRol"]))
-            {
-                if (
+    public function ctrRegistroAprendiz()
+    {
+
+        if (
+            isset($_POST["nuevoTipoDocumento"])  &&
+            isset($_POST["nuevoDocumento"])  &&
+            isset($_POST["nuevoNombre"])  &&
+            isset($_POST["nuevoApellido"])  &&
+            isset($_POST["nuevoCorreo"])  &&
+            isset($_POST["nuevoFechaNacimiento"])  &&
+            isset($_POST["nuevoRol"])
+        ) {
+            if (
                 preg_match('/^[0-9]+$/', $_POST["nuevoDocumento"]) &&
                 preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚÑñ ]+$/', $_POST["nuevoNombre"]) &&
                 preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚÑñ ]+$/', $_POST["nuevoApellido"])
-              ) {
+            ) {
 
-                $tabla="usuarios";
+                $tabla = "usuarios";
 
-                $passEncriptado=crypt($_POST["nuevoDocumento"],'$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
+                $passEncriptado = crypt($_POST["nuevoDocumento"], '$2a$07$asdfsdvafdsgf04sdfsadfGAiADeveloper$');
 
                 $fichaId = null;
                 if ($_POST["nuevoRol"] == "Aprendiz" && isset($_POST["nuevaFicha"])) {
@@ -213,16 +214,16 @@ class ControladorUsuarios{
                 $ruta = self::procesarSubidaFoto($_FILES["nuevaFoto"], $_POST["nuevoDocumento"]);
 
                 $datos = array(
-                  "tipoDocumento" => $_POST["nuevoTipoDocumento"],
-                  "documentoId" => $_POST["nuevoDocumento"],
-                  "nombres" => $_POST["nuevoNombre"],
-                  "apellidos" => $_POST["nuevoApellido"],
-                  "correo" => $_POST["nuevoCorreo"],
-                  "fechaNacimiento" => $_POST["nuevoFechaNacimiento"],
-                  "rol" => $_POST["nuevoRol"],
-                  "password"=> $passEncriptado,
-                  "ficha_id" => $fichaId,
-                  "foto" => $ruta
+                    "tipoDocumento" => $_POST["nuevoTipoDocumento"],
+                    "documentoId" => $_POST["nuevoDocumento"],
+                    "nombres" => $_POST["nuevoNombre"],
+                    "apellidos" => $_POST["nuevoApellido"],
+                    "correo" => $_POST["nuevoCorreo"],
+                    "fechaNacimiento" => $_POST["nuevoFechaNacimiento"],
+                    "rol" => $_POST["nuevoRol"],
+                    "password" => $passEncriptado,
+                    "ficha_id" => $fichaId,
+                    "foto" => $ruta
                 );
                 $contacto = array(
                     "direccion" => isset($_POST["nuevaDireccion"]) ? $_POST["nuevaDireccion"] : "",
@@ -230,10 +231,10 @@ class ControladorUsuarios{
                     "codigo_dep" => isset($_POST["nuevoDepartamento"]) ? $_POST["nuevoDepartamento"] : "",
                     "codigo_ciu" => isset($_POST["nuevaCiudad"]) ? $_POST["nuevaCiudad"] : ""
                 );
-                
-                $respuesta= ModeloUsuarios::mdlAgregarUsuario($tabla, $datos, $contacto);
 
-                if($respuesta == "ok"){
+                $respuesta = ModeloUsuarios::mdlAgregarUsuario($tabla, $datos, $contacto);
+
+                if ($respuesta == "ok") {
 
                     echo "<script>
                         Swal.fire({
@@ -248,7 +249,7 @@ class ControladorUsuarios{
                             }
                         });
                     </script>";
-                }else if($respuesta == "duplicate"){
+                } else if ($respuesta == "duplicate") {
                     echo "<script>
                         Swal.fire({
                             icon: 'error',
@@ -258,17 +259,18 @@ class ControladorUsuarios{
                             confirmButtonText: 'Aceptar'
                         });
                     </script>";
-                }else{
+                } else {
                     echo "<br><div class='alert alert-danger'>Error al agregar el usuario</div>";
                 }
-              }
+            }
         }  // fin del isset
     }
 
     // ************************************
     // TRAER UN USUARIO ESPECIFICO DE LA BD
     // ************************************
-    static public function ctrMostrarUsuarios($item, $valor){
+    static public function ctrMostrarUsuarios($item, $valor)
+    {
         $tabla = "usuarios";
         $respuesta = ModeloUsuarios::mdlMostrarUsuarios($tabla, $item, $valor);
         return $respuesta;
@@ -277,7 +279,8 @@ class ControladorUsuarios{
     // ************************************
     // EDITAR USUARIO
     // ************************************
-    public function ctrEditarUsuario(){
+    public function ctrEditarUsuario()
+    {
         if (isset($_POST["editarDocumento"]) && isset($_POST["idUsuarioEditar"])) {
             if (
                 preg_match('/^[0-9]+$/', $_POST["editarDocumento"]) &&
@@ -399,7 +402,8 @@ class ControladorUsuarios{
     // ************************************
     // EDITAR PERFIL
     // ************************************
-    public function ctrEditarPerfil(){
+    public function ctrEditarPerfil()
+    {
         if (isset($_POST["idPerfil"]) && isset($_POST["editarNombrePerfil"])) {
             if (
                 preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚÑñ ]+$/', $_POST["editarNombrePerfil"]) &&
@@ -446,7 +450,7 @@ class ControladorUsuarios{
                 $respuesta = ModeloUsuarios::mdlEditarPerfil($tabla, $datos);
 
                 if ($respuesta == "ok") {
-                    
+
                     $contacto = array(
                         "direccion" => isset($_POST["editarDireccionPerfil"]) ? $_POST["editarDireccionPerfil"] : "",
                         "telefono" => isset($_POST["editarTelefonoPerfil"]) ? $_POST["editarTelefonoPerfil"] : "",
@@ -468,7 +472,7 @@ class ControladorUsuarios{
                             confirmButtonText: 'Aceptar'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                window.location = 'inicio';
+                                window.location = 'identificacion';
                             }
                         });
                     </script>";
@@ -499,17 +503,19 @@ class ControladorUsuarios{
     // ************************************
     // ACTUALIZAR ESTADO DE UN USUARIO
     // ************************************
-    static public function ctrCambiarEstadoUsuario($idUsuario, $estado){
+    static public function ctrCambiarEstadoUsuario($idUsuario, $estado)
+    {
         $tabla = "usuarios";
         $respuesta = ModeloUsuarios::mdlCambiarEstadoUsuario($tabla, $idUsuario, $estado);
         return $respuesta;
-    }   
+    }
 
     /**
      * Procesa la subida de una foto de usuario, aplicando redimensión si GD está habilitado,
      * o guardando el archivo directamente como fallback.
      */
-    private static function procesarSubidaFoto($fileInput, $documentoId, $fotoActual = null) {
+    private static function procesarSubidaFoto($fileInput, $documentoId, $fotoActual = null)
+    {
         $ruta = !empty($fotoActual) ? $fotoActual : "documentos/anonimo/anonimo.png";
 
         if (isset($fileInput["tmp_name"]) && !empty($fileInput["tmp_name"])) {
@@ -563,7 +569,6 @@ class ControladorUsuarios{
                         imagedestroy($destino);
                         $ruta = $rutaNueva;
                     }
-
                 } else {
                     echo "<script>
                         Swal.fire({
@@ -592,5 +597,4 @@ class ControladorUsuarios{
 
         return $ruta;
     }
-
 }//fin de la clase ControladorUsuarios

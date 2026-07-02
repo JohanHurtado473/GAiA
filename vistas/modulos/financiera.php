@@ -183,7 +183,7 @@ $pendientesBancarios = ControladorFinanciera::ctrListarPendientesBancarios();
                                                             title="Valores a Comprometer">
                                                             <i class="fas fa-dollar-sign"></i>
                                                         </button>
-                                                        <button class="btn btn-sm btn-outline-light btnDescargarPdf"
+                                                        <button class="btn btn-sm btn-outline-light btnDescargarPdf mr-1"
                                                             data-identificacion="<?php echo $ben["identificacion"]; ?>"
                                                             data-aprendiz="<?php echo $ben["aprendiz"]; ?>"
                                                             data-ficha="<?php echo $ben["codigo_ficha"]; ?>"
@@ -195,6 +195,12 @@ $pendientesBancarios = ControladorFinanciera::ctrListarPendientesBancarios();
                                                             data-apoyo="<?php echo $conv["descripcion_apoyo"]; ?>"
                                                             title="Descargar PDF">
                                                             <i class="fas fa-file-pdf"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-light btnRelevarBeneficiario"
+                                                            data-idInscripcion="<?php echo $ben["inscripcion_id"]; ?>"
+                                                            data-toggle="modal" data-target="#modal-relevarBeneficiario"
+                                                            title="Relevar Beneficiario">
+                                                            <i class="fas fa-exchange-alt"></i>
                                                         </button>
                                                     </div>
                                                 </td>
@@ -461,6 +467,152 @@ $pendientesBancarios = ControladorFinanciera::ctrListarPendientesBancarios();
             <div class="modal-footer justify-content-between" style="background-color: #343a40;">
                 <button type="button" class="btn btn-success" id="btnDescargarExcelValores">
                     <i class="fas fa-file-excel mr-2"></i> Descargar Excel
+                </button>
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL RELEVAR BENEFICIARIO -->
+<div class="modal fade" id="modal-relevarBeneficiario" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header" style="background-color: #343a40;">
+                <h4 class="modal-title font-weight-bold"><i class="fas fa-exchange-alt mr-2 text-success"></i> Relevar Beneficiario</h4>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+             <div class="modal-body" style="background-color: #454d55 !important;">
+                
+                <!-- Inputs ocultos para IDs de relevo -->
+                <input type="hidden" id="relevarIdInscripcionSaliente">
+                <input type="hidden" id="relevarIdAsignacionSaliente">
+                <input type="hidden" id="relevarIdInscripcionEntrante">
+                
+                <!-- SECCIÓN: APRENDIZ SALIENTE -->
+                <div class="card bg-dark text-white border border-secondary mb-3 shadow-sm">
+                    <div class="card-header border-bottom border-secondary d-flex justify-content-between align-items-center" style="background-color: #343a40;">
+                        <h6 class="font-weight-bold mb-0 text-success"><i class="fas fa-user-minus mr-2"></i>Aprendiz Saliente</h6>
+                        <button type="button" class="btn btn-sm btn-outline-info btnVerContactoRelevo" id="btnInfoSaliente" title="Información de Contacto">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <!-- Beneficiario Actual -->
+                            <div class="col-md-6 form-group">
+                                <label>Beneficiario Actual</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarNombreActual" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <!-- Documento -->
+                            <div class="col-md-6 form-group">
+                                <label>Documento Aprendiz Saliente</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarDocumentoActual" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <!-- Ficha -->
+                            <div class="col-md-6 form-group">
+                                <label>Ficha</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarFichaActual" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: APRENDIZ ENTRANTE -->
+                <div class="card bg-dark text-white border border-secondary mb-3 shadow-sm">
+                    <div class="card-header border-bottom border-secondary" style="background-color: #343a40;">
+                        <h6 class="font-weight-bold mb-0 text-success"><i class="fas fa-user-plus mr-2"></i>Aprendiz Entrante</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="row">
+                            <!-- Documento Aprendiz Entrante -->
+                            <div class="col-md-6 form-group">
+                                <label>Documento Aprendiz Entrante</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarDocumentoEntrante" class="form-control" placeholder="Ingrese documento">
+                                </div>
+                            </div>
+                            <!-- Nombre Aprendiz Entrante -->
+                            <div class="col-md-6 form-group">
+                                <label>Nombre Aprendiz Entrante</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarNombreEntrante" class="form-control" placeholder="Nombre completo" readonly>
+                                </div>
+                            </div>
+                            <!-- Ficha -->
+                            <div class="col-md-6 form-group">
+                                <label>Ficha</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    </div>
+                                    <input type="text" id="relevarFichaEntrante" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mini listado de seleccionados -->
+                        <div class="mt-3">
+                            <label class="text-success font-weight-bold" style="font-size: 0.9rem;">Últimos 5 Aprendices Seleccionados (Disponibles para Relevo)</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered text-white border-secondary mb-0" style="font-size: 0.85rem;">
+                                    <thead class="bg-secondary text-center">
+                                        <tr>
+                                            <th>Documento</th>
+                                            <th>Nombre</th>
+                                            <th>Ficha</th>
+                                            <th>Convocatoria</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="listaRelevoSeleccionados">
+                                        <!-- Cargar dinámicamente con AJAX -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Motivo de Relevo -->
+                    <div class="col-md-12 form-group">
+                        <label>Motivo de Relevo</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-comment-alt"></i></span>
+                            </div>
+                            <textarea id="relevarMotivo" class="form-control" rows="3" placeholder="Describa la razón del relevo (ej. Deserción, cancelación de matrícula, etc.)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between" style="background-color: #343a40;">
+                <button type="button" class="btn btn-success" id="btnGuardarRelevo">
+                    <i class="fas fa-check mr-2"></i> Procesar Relevo
                 </button>
                 <button type="button" class="btn btn-outline-light" data-dismiss="modal">Cerrar</button>
             </div>
