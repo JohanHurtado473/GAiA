@@ -34,7 +34,7 @@
           <?php
             $item = null;
             $valor = null;
-            $apoyos = ControladorApoyos::ctrMostrarApoyos($item, $valor);
+            $apoyos = ControladorApoyos::ctrMostrarApoyosActivos($item, $valor);
 
             foreach ($apoyos as $key => $value) {
               

@@ -37,6 +37,7 @@
             <th style="width:10px">#</th>
             <th>Descripción del apoyo</th>
             <th>¿Dual?</th>
+            <th>Estado</th>
             <th>Información</th>
             <th>Icono</th>
             <th>Acciones</th>
@@ -57,6 +58,12 @@
                   echo '<td><button class="btn btn-success btn-xs btnActivarDual" idApoyo="'.$value["id_apoyo"].'" estadoDual="0">Sí</button></td>';
                 }else{
                   echo '<td><button class="btn btn-danger btn-xs btnActivarDual" idApoyo="'.$value["id_apoyo"].'" estadoDual="1">No</button></td>';
+                }
+
+                if($value["estado_apoyo"] == 1){
+                  echo '<td><button class="btn btn-success btn-xs btnActivarApoyo" idApoyo="'.$value["id_apoyo"].'" estadoApoyo="0">Activo</button></td>';
+                }else{
+                  echo '<td><button class="btn btn-danger btn-xs btnActivarApoyo" idApoyo="'.$value["id_apoyo"].'" estadoApoyo="1">Inhabilitado</button></td>';
                 }
 
                 $info = $value["informacion_apoyo"];
@@ -224,6 +231,19 @@ MODAL EDITAR APOYO
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="editarApoyoDual" id="editarApoyoDualNo" value="0">
                     <label class="form-check-label" for="editarApoyoDualNo">No</label>
+                </div>
+            </div>
+
+            <!-- ENTRADA PARA HABILITAR O INHABILITAR APOYO -->
+            <div class="form-group">
+                <label>Estado del apoyo</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="editarEstadoApoyo" id="editarEstadoActivo" value="1">
+                    <label class="form-check-label" for="editarEstadoActivo">Activo</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="editarEstadoApoyo" id="editarEstadoInhabilitado" value="0">
+                    <label class="form-check-label" for="editarEstadoInhabilitado">Inhabilitado</label>
                 </div>
             </div>
 
