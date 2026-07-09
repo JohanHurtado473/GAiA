@@ -45,6 +45,41 @@ $(document).on("click", ".btnActivarDual", function(){
 });
 
 /*=============================================
+CAMBIAR ESTADO APOYO
+=============================================*/
+$(document).on("click", ".btnActivarApoyo", function(){ 
+    let boton = $(this);
+    let idApoyo = boton.attr("idApoyo");
+    let estadoApoyo = boton.attr("estadoApoyo");
+    let datos = new FormData();
+    datos.append("idEstadoApoyo", idApoyo);
+    datos.append("estadoApoyo", estadoApoyo);
+    $.ajax({
+        url: "ajax/apoyos.ajax.php",
+        method: "POST",
+        data: datos,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function (respuesta) {
+            if (respuesta.trim() === "ok"){
+                if (estadoApoyo == 1) { // De 0 a 1 (Activo)
+                    boton.removeClass("btn-danger");
+                    boton.addClass("btn-success");
+                    boton.html("Activo");
+                    boton.attr("estadoApoyo", 0);
+                } else { // De 1 a 0 (Inhabilitado)
+                    boton.removeClass("btn-success");
+                    boton.addClass("btn-danger");
+                    boton.html("Inhabilitado");
+                    boton.attr("estadoApoyo", 1);
+                }
+            }
+        }
+    });
+});
+
+/*=============================================
 EDITAR APOYO
 =============================================*/
 $(".tablaApoyos").on("click", ".btnEditarApoyo", function(){

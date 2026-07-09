@@ -29,7 +29,7 @@
          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
            <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-
+            <?php if ($_SESSION["rol"] == "GESTORA" || $_SESSION["rol"] == "ADMIN"): ?>
            <!-- CONFIGURACION -->
            <li class="nav-item menu-open ">
              <a href="#" class="nav-link active">
@@ -42,23 +42,30 @@
 
              <ul class="nav nav-treeview">
                <li class="nav-item">
-                 <a href="apoyos" class="nav-link">
+                 <a href="./sedes" class="nav-link">
                    <i class="far fa-circle nav-icon"></i>
-                   <p>Apoyos</p>
-                 </a>
-               </li>
+                   <p>Sedes</p>
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="fichas" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Fichas</p>
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="apoyos" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Apoyos</p>
+                  </a>
+                </li>
 
                <li class="nav-item">
                  <a href="convocatorias" class="nav-link">
                    <i class="far fa-circle nav-icon"></i>
-                   <p>Convocatoria</p>
-                 </a>
-               </li>
-
-               <li class="nav-item">
-                 <a href="./sedes" class="nav-link">
-                   <i class="far fa-circle nav-icon"></i>
-                   <p>Sedes</p>
+                   <p>Convocatorias</p>
                  </a>
                </li>
 
@@ -68,17 +75,10 @@
                    <p>Usuarios</p>
                  </a>
                </li>
-
-               <li class="nav-item">
-                 <a href="fichas" class="nav-link">
-                   <i class="far fa-circle nav-icon"></i>
-                   <p>Fichas</p>
-                 </a>
-               </li>
-
              </ul>
            </li>
-
+            
+           <?php endif; ?>
 
            <li class="nav-item">
              <a href="identificacion" class="nav-link">
@@ -89,6 +89,7 @@
              </a>
            </li>
 
+          <?php if ($_SESSION["rol"] != "GESTORA"): ?>
 
            <li class="nav-item">
              <a href="inscripciones" class="nav-link">
@@ -98,6 +99,8 @@
                </p>
              </a>
            </li>
+
+           <?php endif; ?>
 
 
 
@@ -128,16 +131,35 @@
  
               </ul>
             </li>
+            
+ <li class="nav-item menu-open">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-handshake"></i>
+                <p>
+                  Financiera
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="financiera" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Beneficiarios</p>
+                  </a>
+                </li>
+                
+                <li class="nav-item">
+                  <a href="historialRelevos" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Historial de relevos</p>
+                  </a>
+                </li>
+                
+              </ul>
+            </li>
+            
             <?php endif; ?>
-
-           <li class="nav-item">
-             <a href="financiera" class="nav-link">
-               <i class="fas fa-money-bill-wave"></i>
-               <p>
-                 Financiera
-               </p>
-             </a>
-           </li>
 
            <li class="nav-item">
              <a href="reportes" class="nav-link">
@@ -166,8 +188,14 @@
              <span aria-hidden="true">&times;</span>
            </button>
          </div>
-         <div class="modal-body">
-           <form action="" method="post" enctype="multipart/form-data">
+         <div class="modal-body">           <form action="" method="post" enctype="multipart/form-data">
+             <?php
+             $contactoPerfil = ModeloUsuarios::mdlObtenerContactoUsuario($_SESSION["id"]);
+             $dirP = $contactoPerfil ? $contactoPerfil["direccion"] : "";
+             $telP = $contactoPerfil ? $contactoPerfil["telefono"] : "";
+             $depP = $contactoPerfil ? $contactoPerfil["codigo_dep"] : "";
+             $ciuP = $contactoPerfil ? $contactoPerfil["codigo_ciu"] : "";
+             ?>
 
              <input type="hidden" name="idPerfil" value="<?php echo $_SESSION["id"]; ?>">
              <input type="hidden" name="fotoActual" value="<?php echo $_SESSION["foto"]; ?>">
@@ -198,6 +226,57 @@
                </div>
              </div>
 
+             <!-- CONTACTO: DIRECCION -->
+             <div class="input-group mb-3">
+                 <div class="input-group-prepend">
+                     <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                 </div>
+                 <input type="text" class="form-control" id="editarDireccionPerfil" name="editarDireccionPerfil" placeholder="Dirección de residencia" value="<?php echo $dirP; ?>">
+             </div>
+
+             <!-- CONTACTO: TELEFONO -->
+             <div class="input-group mb-3">
+                 <div class="input-group-prepend">
+                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                 </div>
+                 <input type="text" class="form-control" id="editarTelefonoPerfil" name="editarTelefonoPerfil" placeholder="Teléfono de contacto" value="<?php echo $telP; ?>">
+             </div>
+
+             <!-- CONTACTO: DEPARTAMENTO -->
+             <div class="input-group mb-3">
+                 <div class="input-group-prepend">
+                     <span class="input-group-text"><i class="fas fa-map"></i></span>
+                 </div>
+                 <select class="form-control" name="editarDepartamentoPerfil" id="editarDepartamentoPerfil">
+                     <option value="">Seleccionar Departamento</option>
+                     <?php
+                     $departamentos = ModeloUsuarios::mdlObtenerDepartamentos();
+                     foreach ($departamentos as $dep) {
+                         $selected = ($dep["codigo_dep"] == $depP) ? "selected" : "";
+                         echo '<option value="' . $dep["codigo_dep"] . '" '.$selected.'>' . $dep["nombre"] . '</option>';
+                     }
+                     ?>
+                 </select>
+             </div>
+
+             <!-- CONTACTO: CIUDAD -->
+             <div class="input-group mb-3">
+                 <div class="input-group-prepend">
+                     <span class="input-group-text"><i class="fas fa-city"></i></span>
+                 </div>
+                 <select class="form-control" name="editarCiudadPerfil" id="editarCiudadPerfil">
+                     <option value="">Seleccionar Municipio/Ciudad</option>
+                     <?php
+                     if($depP != ""){
+                         $ciudades = ModeloUsuarios::mdlObtenerCiudades($depP);
+                         foreach ($ciudades as $ciu) {
+                             $selected = ($ciu["codigo_ciu"] == $ciuP) ? "selected" : "";
+                             echo '<option value="' . $ciu["codigo_ciu"] . '" '.$selected.'>' . $ciu["nombre"] . '</option>';
+                         }
+                     }
+                     ?>
+                 </select>
+             </div>
                <div class="form-group">
                  <div class="panel">CAMBIAR FOTO PERFIL</div>
                  <div class="custom-file mb-2">

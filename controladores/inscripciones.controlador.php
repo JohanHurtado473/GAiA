@@ -84,6 +84,10 @@ class ControladorInscripciones {
         
         // Sanitizar el nombre del requisito
         $nombreDocSanitizado = self::sanitizarCadena($nombreDoc);
+        //si el nombre del archivo es muy largo este debe truncarse a 20 caracteres
+        if (strlen($nombreDocSanitizado) > 20) {
+            $nombreDocSanitizado = substr($nombreDocSanitizado, 0, 20);
+        }
         
         // Sanitizar el nombre completo del aprendiz
         $nombreAprendizCompleto = self::sanitizarCadena($nombres . " " . $apellidos);

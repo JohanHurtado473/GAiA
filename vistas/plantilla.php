@@ -118,6 +118,7 @@
           $_GET["ruta"] == "inscripciones" ||
           $_GET["ruta"] == "inscripciones2" ||
           $_GET["ruta"] == "Usuarios" ||
+          $_GET["ruta"] == "historialRelevos" ||
           $_GET["ruta"] == "Salir"
 
         ) {

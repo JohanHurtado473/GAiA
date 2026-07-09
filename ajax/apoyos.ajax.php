@@ -21,6 +21,21 @@ class AjaxApoyos
         echo $respuesta ? 'ok' : 'error';
     }
 
+    // CAMBIAR ESTADO DEL APOYO
+    public $idEstadoApoyo;
+    public $estadoApoyo;
+
+    public function ajaxCambiarEstadoApoyo()
+    {
+        $item1 = "estado_apoyo";
+        $valor1 = $this->estadoApoyo;
+        $item2 = "id_apoyo";
+        $valor2 = $this->idEstadoApoyo;
+
+        $respuesta = ControladorApoyos::ctrActualizarApoyo($item1, $valor1, $item2, $valor2);
+        echo $respuesta ? 'ok' : 'error';
+    }
+
     // EDITAR APOYO
     public $idApoyo;
 
@@ -41,6 +56,16 @@ if (isset($_POST["estadoDual"])) {
     $cambiarDual->idApoyoDual = $_POST["idApoyoDual"];
     $cambiarDual->estadoDual = $_POST["estadoDual"];
     $cambiarDual->ajaxCambiarDualApoyo();
+}
+
+/*=============================================
+CAMBIAR ESTADO DEL APOYO
+=============================================*/
+if (isset($_POST["estadoApoyo"])) {
+    $cambiarEstado = new AjaxApoyos();
+    $cambiarEstado->idEstadoApoyo = $_POST["idEstadoApoyo"];
+    $cambiarEstado->estadoApoyo = $_POST["estadoApoyo"];
+    $cambiarEstado->ajaxCambiarEstadoApoyo();
 }
 
 /*=============================================
